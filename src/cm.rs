@@ -331,6 +331,10 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
             NodeValue::TaskItem(checked) => self.format_task_item(checked, entering),
             NodeValue::Strikethrough => self.format_strikethrough(),
             NodeValue::Superscript => self.format_superscript(),
+            NodeValue::Subscript => self.format_subscript(),
+            NodeValue::SpoileredText => self.format_spoiler(),
+            NodeValue::Underline => self.format_underline(),
+            NodeValue::ImageMention(ref nl) => self.format_image_mention(nl),
             NodeValue::Link(ref nl) => return self.format_link(node, nl, entering),
             NodeValue::Image(ref nl) => self.format_image(nl, allow_wrap, entering),
             NodeValue::Table(..) => self.format_table(entering),
@@ -612,6 +616,22 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
 
     fn format_superscript(&mut self) {
         write!(self, "^").unwrap();
+    }
+
+    fn format_subscript(&mut self) {
+        write!(self, "%").unwrap();
+    }
+
+    fn format_spoiler(&mut self) {
+        write!(self, "||").unwrap();
+    }
+
+    fn format_underline(&mut self) {
+        write!(self, "__").unwrap();
+    }
+
+    fn format_image_mention(&mut self, nl: &str) {
+        write!(self, ">>{}", nl).unwrap();
     }
 
     fn format_link(&mut self, node: &'a AstNode<'a>, nl: &NodeLink, entering: bool) -> bool {

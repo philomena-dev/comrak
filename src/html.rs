@@ -663,6 +663,20 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</sup>")?;
                 }
             }
+            NodeValue::Subscript => {
+                if entering {
+                    self.output.write_all(b"<sub>")?;
+                } else {
+                    self.output.write_all(b"</sub>")?;
+                }
+            }
+            NodeValue::Underline => {
+                if entering {
+                    self.output.write_all(b"<ins>")?;
+                } else {
+                    self.output.write_all(b"</ins>")?;
+                }
+            }
             NodeValue::Link(ref nl) => {
                 if entering {
                     self.output.write_all(b"<a href=\"")?;
@@ -815,6 +829,14 @@ impl<'o> HtmlFormatter<'o> {
                             .write_all(b"<input type=\"checkbox\" disabled=\"\" /> ")?;
                     }
                 }
+            }
+            NodeValue::SpoileredText => if entering {
+                self.output.write_all(b"<span class=\"spoiler\">")?;
+            } else {
+                self.output.write_all(b"</span>")?;
+            }
+            NodeValue::ImageMention(ref data) => {
+                self.output.write_all(data[..].as_bytes())?;
             }
         }
         Ok(false)

@@ -219,6 +219,42 @@ pub struct ComrakExtensionOptions {
     /// ```
     pub superscript: bool,
 
+    /// Enables the Philomena Comrak extension.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, ComrakOptions};
+    /// let mut options = ComrakOptions::default();
+    /// let mut replacements = HashMap::new();
+    ///
+    /// replacements.insert("1234", "<div id=\"1234\"></div>");
+    ///
+    /// options.extension.philomena = true;
+    /// options.extension.philomena_replacements = Some(replacements);
+    ///
+    /// assert_eq!(markdown_to_html("||spoilered||", &options),
+    ///            "<span class=\"spoiler\">spoilered</span>");
+    /// assert_eq!(markdown_to_html("%subscript%"", &options),
+    ///            "<sub>subscript</sub>");
+    /// ```
+    pub philomena: bool,
+
+    /// Additional replacements for the Philomena Comrak extension.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, ComrakOptions};
+    /// let mut options = ComrakOptions::default();
+    /// let mut replacements = HashMap::new();
+    ///
+    /// replacements.insert("1234p", "<div id=\"1234\"></div>");
+    ///
+    /// options.extension.philomena = true;
+    /// options.extension.philomena_replacements = Some(replacements);
+    ///
+    /// assert_eq!(markdown_to_html(">>1234p", &options),
+    ///            "<div id=\"1234\"></div>");
+    /// ```
+    pub philomena_replacements: Option<HashMap<String, String>>,
+
     /// Enables the header IDs Comrak extension.
     ///
     /// ```

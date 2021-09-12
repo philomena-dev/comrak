@@ -134,6 +134,7 @@ enum Extension {
     Superscript,
     Footnotes,
     DescriptionLists,
+    Philomena,
 }
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -198,6 +199,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             header_ids: cli.header_ids,
             footnotes: exts.contains(&Extension::Footnotes),
             description_lists: exts.contains(&Extension::DescriptionLists),
+            philomena: exts.contains(&Extension::Philomena),
+            philomena_replacements: None,
             front_matter_delimiter: cli.front_matter_delimiter,
         },
         parse: ComrakParseOptions {

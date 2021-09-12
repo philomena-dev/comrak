@@ -91,6 +91,10 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         if options.extension.superscript {
             s.special_chars[b'^' as usize] = true;
         }
+        if options.extension.philomena {
+            s.special_chars[b'%' as usize] = true;
+            s.special_chars[b'|' as usize] = true;
+        }
         for &c in &[b'"', b'\'', b'.', b'-'] {
             s.smart_chars[c as usize] = true;
         }
@@ -137,26 +141,36 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             '~' if self.options.extension.strikethrough => Some(self.handle_delim(b'~')),
             '^' if self.options.extension.superscript => Some(self.handle_delim(b'^')),
             _ => {
-                let endpos = self.find_special_char();
-                let mut contents = self.input[self.pos..endpos].to_vec();
-                self.pos = endpos;
+                if self.options.extension.strikethrough && c == '~' {
+                    Some(self.handle_delim(b'~'))
+                } else if self.options.extension.superscript && c == '^' {
+                    Some(self.handle_delim(b'^'))
+                } else if self.options.extension.philomena && c == '%' {
+                    Some(self.handle_delim(b'%'))
+                } else if self.options.extension.philomena && c == '|' {
+                    Some(self.handle_delim(b'|'))
+                } else {
+                    let endpos = self.find_special_char();
+                    let mut contents = self.input[self.pos..endpos].to_vec();
+                    self.pos = endpos;
 
-                if self
-                    .peek_char()
-                    .map_or(false, |&c| strings::is_line_end_char(c))
-                {
-                    strings::rtrim(&mut contents);
+                    if self
+                        .peek_char()
+                        .map_or(false, |&c| strings::is_line_end_char(c))
+                    {
+                        strings::rtrim(&mut contents);
+                    }
+
+                    // if we've just produced a LineBreak, then we should consume any leading
+                    // space on this line
+                    if node.last_child().map_or(false, |n| {
+                        matches!(n.data.borrow().value, NodeValue::LineBreak)
+                    }) {
+                        strings::ltrim(&mut contents);
+                    }
+
+                    Some(make_inline(self.arena, NodeValue::Text(contents)))
                 }
-
-                // if we've just produced a LineBreak, then we should consume any leading
-                // space on this line
-                if node.last_child().map_or(false, |n| {
-                    matches!(n.data.borrow().value, NodeValue::LineBreak)
-                }) {
-                    strings::ltrim(&mut contents);
-                }
-
-                Some(make_inline(self.arena, NodeValue::Text(contents)))
             }
         };
 
@@ -242,6 +256,10 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             if self.options.extension.superscript {
                 i['^' as usize] = stack_bottom;
             }
+            if self.options.extension.philomena {
+                i['%' as usize] = stack_bottom;
+                i['|' as usize] = stack_bottom;
+            }
         }
 
         // This is traversing the stack from the top to the bottom, setting `closer` to
@@ -312,6 +330,8 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                     || closer.unwrap().delim_char == b'_'
                     || (self.options.extension.strikethrough && closer.unwrap().delim_char == b'~')
                     || (self.options.extension.superscript && closer.unwrap().delim_char == b'^')
+                    || (self.options.extension.philomena && closer.unwrap().delim_char == b'%')
+                    || (self.options.extension.philomena && closer.unwrap().delim_char == b'|')
                 {
                     if opener_found {
                         // Finally, here's the happy case where the delimiters
@@ -776,6 +796,12 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                 NodeValue::Strikethrough
             } else if self.options.extension.superscript && opener_char == b'^' {
                 NodeValue::Superscript
+            } else if self.options.extension.philomena && opener_char == b'%' {
+                NodeValue::Subscript
+            } else if self.options.extension.philomena && opener_char == b'|' && use_delims == 2 {
+                NodeValue::SpoileredText
+            } else if self.options.extension.philomena && opener_char == b'_' && use_delims == 2 {
+                NodeValue::Underline
             } else if use_delims == 1 {
                 NodeValue::Emph
             } else {

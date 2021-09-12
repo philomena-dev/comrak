@@ -22,6 +22,8 @@ fn fuzz_doesnt_crash(md: String) {
             autolink: true,
             tasklist: true,
             superscript: true,
+            philomena: true,
+            philomena_replacements: None,
             header_ids: Some("user-content-".to_string()),
             footnotes: true,
             description_lists: true,
@@ -829,6 +831,48 @@ fn superscript() {
 }
 
 #[test]
+fn subscript() {
+    html_opts!(
+        [extension.philomena],
+        concat!("e = mc%2%.\n"),
+        concat!("<p>e = mc<sub>2</sub>.</p>\n"),
+    );
+}
+
+#[test]
+fn spoiler() {
+    html_opts!(
+        [extension.philomena],
+        concat!("The ||dog dies at the end of Marley and Me||.\n"),
+        concat!("<p>The <span class=\"spoiler\">dog dies at the end of Marley and Me</span>.</p>\n"),
+    );
+}
+
+#[test]
+fn underline() {
+    html_opts!(
+        [extension.philomena],
+        concat!("__underlined__\n"),
+        concat!("<p><ins>underlined</ins></p>\n"),
+    );
+}
+
+#[test]
+fn image_mention() {
+    html_opts(
+        ">>1234p",
+        "<p><div id=\"1234\">p</div></p>",
+        |mut opts| {
+            let mut replacements = HashMap::new();
+            replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
+
+            opts.extension.philomena = true;
+            opts.extension.philomena_replacements = Some(replacements);
+        }
+    );
+}
+
+#[test]
 fn header_ids() {
     html_opts(
         concat!(
@@ -1285,6 +1329,8 @@ fn exercise_full_api<'a>() {
             autolink: false,
             tasklist: false,
             superscript: false,
+            philomena: false,
+            philomena_replacements: None,
             header_ids: Some("abc".to_string()),
             footnotes: false,
             description_lists: false,
@@ -1405,6 +1451,9 @@ fn exercise_full_api<'a>() {
         ::nodes::NodeValue::Strong => {}
         ::nodes::NodeValue::Strikethrough => {}
         ::nodes::NodeValue::Superscript => {}
+        ::nodes::NodeValue::Subscript => {}
+        ::nodes::NodeValue::SpoileredText => {}
+        ::nodes::NodeValue::Underline => {}
         ::nodes::NodeValue::Link(nl) | ::nodes::NodeValue::Image(nl) => {
             let _: Vec<u8> = nl.url;
             let _: Vec<u8> = nl.title;
@@ -1412,5 +1461,6 @@ fn exercise_full_api<'a>() {
         ::nodes::NodeValue::FootnoteReference(name) => {
             let _: &Vec<u8> = name;
         }
+        ::nodes::NodeValue::ImageMention(_) => {}
     }
 }
