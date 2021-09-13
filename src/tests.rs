@@ -28,6 +28,7 @@ fn fuzz_doesnt_crash(md: String) {
             footnotes: true,
             description_lists: true,
             front_matter_delimiter: None,
+            camoifier: None,
         },
         parse: ::ComrakParseOptions {
             smart: true,
@@ -1335,6 +1336,7 @@ fn exercise_full_api<'a>() {
             footnotes: false,
             description_lists: false,
             front_matter_delimiter: None,
+            camoifier: None,
         },
         parse: ::ComrakParseOptions {
             smart: false,
