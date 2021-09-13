@@ -847,7 +847,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
             self.find_first_nonspace(line);
             let indented = self.indent >= CODE_INDENT;
 
-            if !indented && line[self.first_nonspace] == b'>' {
+            if !indented
+                && line[self.first_nonspace] == b'>'
+                && strings::is_space_or_line_end(line[self.first_nonspace + 1])
+            {
                 let offset = self.first_nonspace + 1 - self.offset;
                 self.advance_offset(line, offset, false);
                 if strings::is_space_or_tab(line[self.offset]) {
@@ -1089,7 +1092,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
 
     fn parse_block_quote_prefix(&mut self, line: &[u8]) -> bool {
         let indent = self.indent;
-        if indent <= 3 && line[self.first_nonspace] == b'>' {
+        if indent <= 3
+            && line[self.first_nonspace] == b'>'
+            && strings::is_space_or_line_end(line[self.first_nonspace + 1])
+        {
             self.advance_offset(line, indent + 1, true);
 
             if strings::is_space_or_tab(line[self.offset]) {

@@ -117,6 +117,10 @@ pub fn is_space_or_tab(ch: u8) -> bool {
     matches!(ch, 9 | 32)
 }
 
+pub fn is_space_or_line_end(ch: u8) -> bool {
+    matches!(ch, 9 | 10 | 13 | 32)
+}
+
 pub fn chop_trailing_hashtags(line: &mut Vec<u8>) {
     rtrim(line);
 
