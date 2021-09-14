@@ -847,7 +847,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
 
             if !indented
                 && line[self.first_nonspace] == b'>'
-                && strings::is_space_or_line_end(line[self.first_nonspace + 1])
+                && strings::is_space_or_tab(line[self.first_nonspace + 1])
             {
                 let offset = self.first_nonspace + 1 - self.offset;
                 self.advance_offset(line, offset, false);
@@ -1092,7 +1092,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
         let indent = self.indent;
         if indent <= 3
             && line[self.first_nonspace] == b'>'
-            && strings::is_space_or_line_end(line[self.first_nonspace + 1])
+            && strings::is_space_or_tab(line[self.first_nonspace + 1])
         {
             self.advance_offset(line, indent + 1, true);
 

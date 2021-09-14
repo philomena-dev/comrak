@@ -859,6 +859,23 @@ fn underline() {
 }
 
 #[test]
+fn greentext_preserved() {
+    html_opts!(
+        [render.hardbreaks],
+        ">implying\n>>implying",
+        "<p>&gt;implying<br />\n&gt;&gt;implying</p>\n"
+    );
+}
+
+#[test]
+fn separate_quotes_on_line_end() {
+    html(
+        "> 1\n>\n> 2",
+        "<blockquote>\n<p>1</p>\n</blockquote>\n<p>&gt;</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
 fn image_mention() {
     html_opts(
         ">>1234p",
