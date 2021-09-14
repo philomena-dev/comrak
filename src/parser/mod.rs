@@ -346,15 +346,13 @@ pub struct ComrakExtensionOptions {
     /// ```
     pub front_matter_delimiter: Option<String>,
 
-    /// If used in conjunction with philomena extensions, attempts to camoify URIs
-    /// using camoifier.
+    /// Wraps image URLs using camoifier.
     ///
     /// ```
     /// # use comrak::{markdown_to_html, ComrakOptions};
     /// let mut options = ComrakOptions::default();
     ///
-    /// options.extension.philomena = true;
-    /// options.extension.camoifier = |s| format!("https://safe-proxy.com?url={}", s);
+    /// options.extension.camoifier = Some(|s| format!("https://safe-proxy.com?url={}", s));
     /// 
     /// assert_eq!(markdown_to_html("![](http://unsafe.evil/bad.png)", &options),
     ///            "<img src=\"https://safe-proxy.com?url=http://unsafe.evil/bad.png\" />\n");

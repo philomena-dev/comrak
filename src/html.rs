@@ -696,14 +696,9 @@ impl<'o> HtmlFormatter<'o> {
                 if entering {
                     self.output.write_all(b"<img src=\"")?;
                     if self.options.render.unsafe_ || !dangerous_url(&nl.url) {
-                        if self.options.extension.philomena {
-                            match self.options.extension.camoifier {
-                                Some(c) => {
-                                    let uri_string = String::from_utf8(nl.url.clone()).unwrap();
-                                    self.escape_href(c(uri_string).as_ref())?
-                                }
-                                None => self.escape_href(&nl.url)?,
-                            }
+                        if let Some(c) = self.options.extension.camoifier {
+                            let uri_string = String::from_utf8(nl.url.clone()).unwrap();
+                            self.escape_href(c(uri_string).as_ref())?
                         } else {
                             self.escape_href(&nl.url)?;
                         }
