@@ -1154,10 +1154,10 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
 
     pub fn handle_image_mention(&mut self, id: Vec<u8>) -> NodeValue {
         let id_str = String::from_utf8(id).unwrap_or_else(|_| String::from(""));
-        let mut html = format!(">>{}", &id_str);
+        let mut html = format!("&gt;&gt;{}", &id_str);
 
         if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref(){ 
-            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!(">>{}", &id_str));
+            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
         }
         
         NodeValue::ImageMention(html.to_string())

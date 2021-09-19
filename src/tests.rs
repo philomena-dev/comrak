@@ -878,8 +878,8 @@ fn separate_quotes_on_line_end() {
 #[test]
 fn image_mention() {
     html_opts(
-        ">>1234p",
-        "<p><div id=\"1234\">p</div></p>\n",
+        ">>1234p >>1337",
+        "<p><div id=\"1234\">p</div> &gt;&gt;1337</p>\n",
         |mut opts| {
             let mut replacements = HashMap::new();
             replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
