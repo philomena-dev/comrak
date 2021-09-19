@@ -149,6 +149,11 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                     Some(self.handle_delim(b'%'))
                 } else if self.options.extension.philomena && c == '|' {
                     Some(self.handle_delim(b'|'))
+                } else if self.options.extension.philomena && c == '>'
+                    && self.peek_char_n(1) == Some(&(b'>')) {
+                    self.pos += 1;
+                    let id = self.scan_image_mention_id().unwrap_or_else(|| vec![]);
+                    Some(make_inline(self.arena, self.handle_image_mention(id)))
                 } else {
                     let endpos = self.find_special_char();
                     let mut contents = self.input[self.pos..endpos].to_vec();
@@ -1118,6 +1123,41 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             self.pos = startpos;
             None
         }
+    }
+
+    pub fn scan_image_mention_id(&mut self) -> Option<Vec<u8>> {
+        let input = &self.input[self.pos..];
+        let len = input.len();
+        let mut i = 0;
+        let mut v: Vec<u8> = Vec::new();
+    
+        if i < len && input[i] == b'>' {
+            i += 1;
+            while i < len {
+                let chr = input[i];
+
+                match chr {
+                    b'0'..=b'9' | b't' | b's' | b'p' => v.push(chr),
+                    _ => break,
+                }
+            }
+        }
+
+        match v.len() {
+            0 => None,
+            _ => Some(v)
+        }
+    }
+
+    pub fn handle_image_mention(&mut self, id: Vec<u8>) -> NodeValue {
+        let id_str = String::from_utf8(id).unwrap_or_else(|_| String::from(""));
+        let mut html = format!(">>{}", &id_str);
+
+        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref(){ 
+            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!(">>{}", &id_str));
+        }
+        
+        NodeValue::ImageMention(html.to_string())
     }
 
     pub fn spnl(&mut self) {

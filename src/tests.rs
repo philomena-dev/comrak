@@ -1480,6 +1480,8 @@ fn exercise_full_api<'a>() {
         ::nodes::NodeValue::FootnoteReference(name) => {
             let _: &Vec<u8> = name;
         }
-        ::nodes::NodeValue::ImageMention(_) => {}
+        ::nodes::NodeValue::ImageMention(data) => {
+            let _: String = data;
+        }
     }
 }
