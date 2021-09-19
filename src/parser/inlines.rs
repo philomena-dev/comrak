@@ -94,6 +94,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         if options.extension.philomena {
             s.special_chars[b'%' as usize] = true;
             s.special_chars[b'|' as usize] = true;
+            s.special_chars[b'>' as usize] = true;
         }
         for &c in &[b'"', b'\'', b'.', b'-'] {
             s.smart_chars[c as usize] = true;
@@ -472,7 +473,13 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
     pub fn find_special_char(&self) -> usize {
         for n in self.pos..self.input.len() {
             if self.special_chars[self.input[n] as usize] {
-                return n;
+                if self.input[n] == b'>' {
+                    if self.input[n + 1] == b'>' {
+                        return n;
+                    }
+                } else {
+                    return n;
+                }
             }
             if self.options.parse.smart && self.smart_chars[self.input[n] as usize] {
                 return n;
