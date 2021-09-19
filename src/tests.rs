@@ -879,7 +879,7 @@ fn separate_quotes_on_line_end() {
 fn image_mention() {
     html_opts(
         ">>1234p",
-        "<p><div id=\"1234\">p</div></p>",
+        "<p><div id=\"1234\">p</div></p>\n",
         |mut opts| {
             let mut replacements = HashMap::new();
             replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
@@ -1481,7 +1481,7 @@ fn exercise_full_api<'a>() {
             let _: &Vec<u8> = name;
         }
         ::nodes::NodeValue::ImageMention(data) => {
-            let _: String = data;
+            let _: String = data.to_string();
         }
     }
 }

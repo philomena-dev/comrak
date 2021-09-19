@@ -153,6 +153,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                     && self.peek_char_n(1) == Some(&(b'>')) {
                     self.pos += 1;
                     let id = self.scan_image_mention_id().unwrap_or_else(|| vec![]);
+                    self.pos += 1 + id.len();
                     Some(make_inline(self.arena, self.handle_image_mention(id)))
                 } else {
                     let endpos = self.find_special_char();
@@ -1140,6 +1141,8 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                     b'0'..=b'9' | b't' | b's' | b'p' => v.push(chr),
                     _ => break,
                 }
+
+                i += 1;
             }
         }
 
