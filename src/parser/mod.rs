@@ -224,17 +224,17 @@ pub struct ComrakExtensionOptions {
     /// ```
     /// # use comrak::{markdown_to_html, ComrakOptions};
     /// let mut options = ComrakOptions::default();
-    /// let mut replacements = HashMap::new();
+    /// let mut replacements = std::collections::HashMap::new();
     ///
-    /// replacements.insert("1234", "<div id=\"1234\"></div>");
+    /// replacements.insert("1234".to_string(), "<div id=\"1234\"></div>".to_string());
     ///
     /// options.extension.philomena = true;
     /// options.extension.philomena_replacements = Some(replacements);
     ///
     /// assert_eq!(markdown_to_html("||spoilered||", &options),
-    ///            "<span class=\"spoiler\">spoilered</span>");
-    /// assert_eq!(markdown_to_html("%subscript%"", &options),
-    ///            "<sub>subscript</sub>");
+    ///            "<p><span class=\"spoiler\">spoilered</span></p>\n");
+    /// assert_eq!(markdown_to_html("%subscript%", &options),
+    ///            "<p><sub>subscript</sub></p>\n");
     /// ```
     pub philomena: bool,
 
@@ -243,15 +243,15 @@ pub struct ComrakExtensionOptions {
     /// ```
     /// # use comrak::{markdown_to_html, ComrakOptions};
     /// let mut options = ComrakOptions::default();
-    /// let mut replacements = HashMap::new();
+    /// let mut replacements = std::collections::HashMap::new();
     ///
-    /// replacements.insert("1234p", "<div id=\"1234\"></div>");
+    /// replacements.insert("1234p".to_string(), "<div id=\"1234\"></div>".to_string());
     ///
     /// options.extension.philomena = true;
     /// options.extension.philomena_replacements = Some(replacements);
     ///
     /// assert_eq!(markdown_to_html(">>1234p", &options),
-    ///            "<div id=\"1234\"></div>");
+    ///            "<p><div id=\"1234\"></div></p>\n");
     /// ```
     pub philomena_replacements: Option<HashMap<String, String>>,
 
@@ -355,7 +355,7 @@ pub struct ComrakExtensionOptions {
     /// options.extension.camoifier = Some(|s| format!("https://safe-proxy.com?url={}", s));
     /// 
     /// assert_eq!(markdown_to_html("![](http://unsafe.evil/bad.png)", &options),
-    ///            "<img src=\"https://safe-proxy.com?url=http://unsafe.evil/bad.png\" />\n");
+    ///            "<p><img src=\"https://safe-proxy.com?url=http://unsafe.evil/bad.png\" alt=\"\" /></p>\n");
     /// ```
     pub camoifier: Option<fn(String) -> String>,
 }
@@ -1298,6 +1298,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
         if !self.current.same_node(last_matched_container)
             && container.same_node(last_matched_container)
             && !self.blank
+            && !matches!(container.data.borrow().value, NodeValue::BlockQuote | NodeValue::Document)
             && matches!(self.current.data.borrow().value, NodeValue::Paragraph)
         {
             self.add_line(self.current, line);

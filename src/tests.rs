@@ -890,6 +890,22 @@ fn separate_quotes_on_line_end() {
 }
 
 #[test]
+fn unnest_quotes_on_line_end() {
+    html(
+        "> 1\n> > 2\n> 1",
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
+fn unnest_quotes_on_line_end_commonmark() {
+    html(
+        "> 1\n> > 2\n> \n> 1",
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
 fn image_mention() {
     html_opts_no_roundtrip(
         "hello world >>1234p >>1337",
