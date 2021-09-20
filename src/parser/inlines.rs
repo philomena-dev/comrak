@@ -475,7 +475,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             if self.special_chars[self.input[n] as usize] {
                 if self.input[n] == b'>' {
                     let new_idx = n + 1;
-                    if new_idx < self.input.len() && self.input[n + 1] == b'>' {
+                    if new_idx < self.input.len() && self.input[new_idx] == b'>' {
                         return n;
                     }
                 } else {
