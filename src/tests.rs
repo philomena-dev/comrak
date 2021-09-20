@@ -108,6 +108,20 @@ where
     );
 }
 
+fn html_opts_no_roundtrip<F>(input: &str, expected: &str, opts: F)
+where
+    F: Fn(&mut ComrakOptions),
+{
+    let arena = Arena::new();
+    let mut options = ComrakOptions::default();
+    opts(&mut options);
+
+    let root = parse_document(&arena, input, &options);
+    let mut output = vec![];
+    html::format_document(root, &options, &mut output).unwrap();
+    compare_strs(&String::from_utf8(output).unwrap(), expected, "regular");
+}
+
 macro_rules! html_opts {
     ([$($optclass:ident.$optname:ident),*], $lhs:expr, $rhs:expr,) => {
         html_opts!([$($optclass.$optname),*], $lhs, $rhs)
@@ -877,7 +891,7 @@ fn separate_quotes_on_line_end() {
 
 #[test]
 fn image_mention() {
-    html_opts(
+    html_opts_no_roundtrip(
         "hello world >>1234p >>1337",
         "<p>hello world <div id=\"1234\">p</div> &gt;&gt;1337</p>\n",
         |mut opts| {
