@@ -614,6 +614,15 @@ fn images() {
 }
 
 #[test]
+fn philomena_images() {
+    html_opts!(
+        [extension.philomena],
+        concat!("![full](http://i.imgur.com/QqK1vq7.png)"),
+        concat!("<p><span class=\"imgspoiler\"><img src=\"http://i.imgur.com/QqK1vq7.png\" alt=\"full\" /></span></p>\n"),
+    );
+}
+
+#[test]
 fn reference_links() {
     html(
         concat!(

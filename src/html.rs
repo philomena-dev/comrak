@@ -694,6 +694,10 @@ impl<'o> HtmlFormatter<'o> {
             }
             NodeValue::Image(ref nl) => {
                 if entering {
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"<span class=\"imgspoiler\">")?;
+                    }
+
                     self.output.write_all(b"<img src=\"")?;
                     if self.options.render.unsafe_ || !dangerous_url(&nl.url) {
                         if let Some(c) = self.options.extension.camoifier {
@@ -711,6 +715,10 @@ impl<'o> HtmlFormatter<'o> {
                         self.escape(&nl.title)?;
                     }
                     self.output.write_all(b"\" />")?;
+
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"</span>")?;
+                    }
                 }
             }
             NodeValue::Table(..) => {
