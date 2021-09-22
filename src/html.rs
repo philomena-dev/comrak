@@ -833,6 +833,10 @@ impl<'o> HtmlFormatter<'o> {
             }
             NodeValue::Image(ref nl) => {
                 if entering {
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"<span class=\"imgspoiler\">")?;
+                    }
+
                     self.output.write_all(b"<img")?;
                     self.render_sourcepos(node)?;
                     self.output.write_all(b" src=\"")?;
@@ -852,6 +856,10 @@ impl<'o> HtmlFormatter<'o> {
                         self.escape(nl.title.as_bytes())?;
                     }
                     self.output.write_all(b"\" />")?;
+
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"</span>")?;
+                    }
                 }
             }
             #[cfg(feature = "shortcodes")]
