@@ -581,7 +581,11 @@ impl<'o> HtmlFormatter<'o> {
                 if !tight {
                     if entering {
                         self.cr()?;
-                        self.output.write_all(b"<p>")?;
+                        if self.options.extension.philomena {
+                            self.output.write_all(b"<div class=\"paragraph\">")?;
+                        } else {
+                            self.output.write_all(b"<p>")?;
+                        }
                     } else {
                         if matches!(
                             node.parent().unwrap().data.borrow().value,
@@ -591,7 +595,11 @@ impl<'o> HtmlFormatter<'o> {
                             self.output.write_all(b" ")?;
                             self.put_footnote_backref()?;
                         }
-                        self.output.write_all(b"</p>\n")?;
+                        if self.options.extension.philomena {
+                            self.output.write_all(b"</div>\n")?;
+                        } else {
+                            self.output.write_all(b"</p>\n")?;
+                        }
                     }
                 }
             }
