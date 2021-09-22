@@ -333,28 +333,22 @@ impl<'o> HtmlFormatter<'o> {
     }
 
     fn replace_href(&mut self, buffer: &[u8]) -> Vec<u8> {
-        let mut result: Vec<u8> = buffer.to_vec();
-
         if self.options.extension.philomena {
-            if let Some(reps) = self.options.extension.philomena_domains.clone() {
-                let uri = String::from_utf8(result.clone()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().unwrap();
+            if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
+                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().unwrap();
 
-                match uri.authority() {
-                    Some(a) => {
-                        if reps.contains(&a.host().to_string()) {
-                            match uri.path_and_query() {
-                                Some(pq) => result = pq.as_str().as_bytes().to_vec(),
-                                None => result = "/".as_bytes().to_vec(),
-                            };
+                if let Some(a) = uri.authority() {
+                    if reps.contains(&a.host().to_string()) {
+                        match uri.path_and_query() {
+                            Some(pq) => return pq.as_str().as_bytes().to_vec(),
+                            None => return "/".as_bytes().to_vec(),
                         }
-                    },
-                    None => (),
-                };
-
-                return result;
+                    }
+                }
             }
         }
-        result
+
+        buffer.to_vec()
     }
 
     fn format<'a>(&mut self, node: &'a AstNode<'a>, plain: bool) -> io::Result<()> {
