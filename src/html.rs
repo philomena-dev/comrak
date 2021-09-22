@@ -332,23 +332,23 @@ impl<'o> HtmlFormatter<'o> {
         Ok(())
     }
 
-    fn replace_href(&mut self, buffer: &[u8]) -> Vec<u8> {
+    fn replace_href(&mut self, buffer: &[u8]) -> Option<Vec<u8>> {
         if self.options.extension.philomena {
             if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
-                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().unwrap();
+                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().ok()?;
 
                 if let Some(a) = uri.authority() {
                     if reps.contains(&a.host().to_string()) {
                         match uri.path_and_query() {
-                            Some(pq) => return pq.as_str().as_bytes().to_vec(),
-                            None => return "/".as_bytes().to_vec(),
+                            Some(pq) => return Some(pq.as_str().as_bytes().to_vec()),
+                            None => return Some("/".as_bytes().to_vec()),
                         }
                     }
                 }
             }
         }
 
-        buffer.to_vec()
+        Some(buffer.to_vec())
     }
 
     fn format<'a>(&mut self, node: &'a AstNode<'a>, plain: bool) -> io::Result<()> {
@@ -709,7 +709,7 @@ impl<'o> HtmlFormatter<'o> {
                 if entering {
                     self.output.write_all(b"<a href=\"")?;
                     if self.options.render.unsafe_ || !dangerous_url(&nl.url) {
-                        let new_href = self.replace_href(&nl.url);
+                        let new_href = self.replace_href(&nl.url).unwrap_or_else(|| nl.url.to_vec());
                         self.escape_href(&new_href)?;
                     }
                     if !nl.title.is_empty() {
