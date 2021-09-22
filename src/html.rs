@@ -10,6 +10,7 @@ use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
 use strings::build_opening_tag;
+use http::Uri;
 
 /// Formats an AST as HTML, modified by the given options.
 pub fn format_document<'a>(
@@ -329,6 +330,31 @@ impl<'o> HtmlFormatter<'o> {
         }
 
         Ok(())
+    }
+
+    fn replace_href(&mut self, buffer: &[u8]) -> Vec<u8> {
+        let mut result: Vec<u8> = buffer.to_vec();
+
+        if self.options.extension.philomena {
+            if let Some(reps) = self.options.extension.philomena_domains.clone() {
+                let uri = String::from_utf8(result.clone()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().unwrap();
+
+                match uri.authority() {
+                    Some(a) => {
+                        if reps.contains(&a.host().to_string()) {
+                            match uri.path_and_query() {
+                                Some(pq) => result = pq.as_str().as_bytes().to_vec(),
+                                None => result = "/".as_bytes().to_vec(),
+                            };
+                        }
+                    },
+                    None => (),
+                };
+
+                return result;
+            }
+        }
+        result
     }
 
     fn format<'a>(&mut self, node: &'a AstNode<'a>, plain: bool) -> io::Result<()> {
@@ -689,7 +715,8 @@ impl<'o> HtmlFormatter<'o> {
                 if entering {
                     self.output.write_all(b"<a href=\"")?;
                     if self.options.render.unsafe_ || !dangerous_url(&nl.url) {
-                        self.escape_href(&nl.url)?;
+                        let new_href = self.replace_href(&nl.url);
+                        self.escape_href(&new_href)?;
                     }
                     if !nl.title.is_empty() {
                         self.output.write_all(b"\" title=\"")?;

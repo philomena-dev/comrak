@@ -255,6 +255,25 @@ pub struct ComrakExtensionOptions {
     /// ```
     pub philomena_replacements: Option<HashMap<String, String>>,
 
+    /// Domains to be turned into relative links for URL and image syntax.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, ComrakOptions};
+    /// let mut options = ComrakOptions::default();
+    ///
+    /// options.extension.philomena = true;
+    /// options.extension.philomena_domains = Some(vec!["example.com".to_string(), "www.example.com".to_string()]);
+    ///
+    /// assert_eq!(markdown_to_html("[test](https://example.com/path) [test](http://www.example.com/path)", &options),
+    ///            "<div class=\"paragraph\"><a href=\"/path\">test</a> <a href=\"/path\">test</a></div>\n");
+    /// 
+    /// options.extension.autolink = true;
+    /// 
+    /// assert_eq!(markdown_to_html("https://example.com/path http://www.example.com/path", &options),
+    ///            "<div class=\"paragraph\"><a href=\"/path\">https://example.com/path</a> <a href=\"/path\">http://www.example.com/path</a></div>\n");
+    /// ```
+    pub philomena_domains: Option<Vec<String>>,
+
     /// Enables the header IDs Comrak extension.
     ///
     /// ```

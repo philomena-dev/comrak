@@ -201,6 +201,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             description_lists: exts.contains(&Extension::DescriptionLists),
             philomena: exts.contains(&Extension::Philomena),
             philomena_replacements: None,
+            philomena_domains: None,
             camoifier: None,
             front_matter_delimiter: cli.front_matter_delimiter,
         },

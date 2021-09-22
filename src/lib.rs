@@ -72,6 +72,7 @@
 #![allow(unknown_lints, clippy::doc_markdown, cyclomatic_complexity)]
 
 extern crate entities;
+extern crate http;
 extern crate pest;
 #[macro_use]
 extern crate pest_derive;
