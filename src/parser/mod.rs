@@ -939,7 +939,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
             } else if !indented
                 && match container.data.borrow().value {
                     NodeValue::Paragraph => unwrap_into(
-                        scanners::setext_heading_line(&line[self.first_nonspace..]),
+                        scanners::setext_heading_line(&line[self.first_nonspace..], self.options.extension.philomena),
                         &mut sc,
                     ),
                     _ => false,

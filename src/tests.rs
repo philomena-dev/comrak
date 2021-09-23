@@ -883,6 +883,15 @@ fn underline() {
 }
 
 #[test]
+fn no_setext_headings_in_philomena() {
+    html_opts!(
+        [extension.philomena],
+        concat!("text text\n---"),
+        concat!("<div class=\"paragraph\">text text</div>\n<hr />\n"),
+    );
+}
+
+#[test]
 fn greentext_preserved() {
     html_opts!(
         [render.hardbreaks],

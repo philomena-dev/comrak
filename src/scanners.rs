@@ -127,8 +127,8 @@ pub enum SetextChar {
 }
 
 #[inline(always)]
-pub fn setext_heading_line(line: &[u8]) -> Option<SetextChar> {
-    if (line[0] == b'=' || line[0] == b'-') && is_match(Rule::setext_heading_line, line) {
+pub fn setext_heading_line(line: &[u8], ignored: bool) -> Option<SetextChar> {
+    if !ignored && (line[0] == b'=' || line[0] == b'-') && is_match(Rule::setext_heading_line, line) {
         if line[0] == b'=' {
             Some(SetextChar::Equals)
         } else {
