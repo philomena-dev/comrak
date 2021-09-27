@@ -917,6 +917,19 @@ fn spoiler_regressions() {
 }
 
 #[test]
+fn mismatched_spoilers() {
+    html_opts!(
+        [extension.philomena],
+        concat!("|||this is a spoiler with pipe in front||\n||this is not a spoiler|\n||this is a spoiler with pipe after|||"),
+        concat!(
+            "<div class=\"paragraph\">|<span class=\"spoiler\">this is a spoiler with pipe in front</span>\n",
+            "||this is not a spoiler|\n",
+            "<span class=\"spoiler\">this is a spoiler with pipe after</span>|</div>\n"
+        ),
+    );
+}
+
+#[test]
 fn underline() {
     html_opts!(
         [extension.philomena],

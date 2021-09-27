@@ -1,8 +1,8 @@
 use crate::ctype::{isalpha, isdigit, ispunct, isspace};
 use crate::nodes::TableAlignment;
 use crate::nodes::{
-    AstNode, ListDelimType, ListType, NodeCodeBlock, NodeHeading, NodeHtmlBlock,
-    NodeLink, NodeValue,
+    AstNode, ListDelimType, ListType, NodeCodeBlock, NodeHeading, NodeHtmlBlock, NodeLink,
+    NodeValue,
 };
 use crate::parser::ComrakOptions;
 use crate::scanners;
