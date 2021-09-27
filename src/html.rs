@@ -890,8 +890,8 @@ impl<'o> HtmlFormatter<'o> {
                 }
             }
 
-            NodeValue::EscapedTag(ref net) => {
-                self.output.write_all(&net.tag.as_slice())?;
+            NodeValue::EscapedTag(ref data) => {
+                self.output.write_all(&data.as_slice())?;
             }
         }
         Ok(false)

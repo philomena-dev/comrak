@@ -1576,8 +1576,8 @@ fn exercise_full_api<'a>() {
         crate::nodes::NodeValue::ImageMention(data) => {
             let _: String = data.to_string();
         }
-        crate::nodes::NodeValue::EscapedTag(net) => {
-            let _: Vec<u8> = net.tag;
+        crate::nodes::NodeValue::EscapedTag(data) => {
+            let _: Vec<u8> = data.to_vec();
         }
     }
 }

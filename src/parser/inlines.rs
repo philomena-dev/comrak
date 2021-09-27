@@ -1,7 +1,7 @@
 use crate::arena_tree::Node;
 use crate::ctype::{ispunct, isspace};
 use crate::entity;
-use crate::nodes::{Ast, AstNode, NodeCode, NodeEscapedTag, NodeLink, NodeValue};
+use crate::nodes::{Ast, AstNode, NodeCode, NodeLink, NodeValue};
 use crate::parser::{
     unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference,
 };
@@ -820,7 +820,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                 if use_delims == 2 {
                     NodeValue::SpoileredText
                 } else {
-                    NodeValue::EscapedTag(NodeEscapedTag { tag: vec![b'|'] })
+                    NodeValue::EscapedTag(vec![b'|'])
                 }
             } else if self.options.extension.philomena && opener_char == b'_' && use_delims == 2 {
                 NodeValue::Underline
