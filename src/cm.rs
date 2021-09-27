@@ -2,7 +2,7 @@ use crate::ctype::{isalpha, isdigit, ispunct, isspace};
 use crate::nodes::TableAlignment;
 use crate::nodes::{
     AstNode, ListDelimType, ListType, NodeCodeBlock, NodeHeading, NodeHtmlBlock, NodeLink,
-    NodeValue,
+    NodeValue, NodeEscapedTag,
 };
 use crate::parser::ComrakOptions;
 use crate::scanners;
@@ -335,6 +335,7 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
             NodeValue::SpoileredText => self.format_spoiler(),
             NodeValue::Underline => self.format_underline(),
             NodeValue::ImageMention(ref nl) => self.format_image_mention(nl),
+            NodeValue::EscapedTag(ref net) => self.format_escaped_tag(net),
             NodeValue::Link(ref nl) => return self.format_link(node, nl, entering),
             NodeValue::Image(ref nl) => self.format_image(nl, allow_wrap, entering),
             NodeValue::Table(..) => self.format_table(entering),
@@ -634,6 +635,10 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
 
     fn format_image_mention(&mut self, nl: &str) {
         write!(self, ">>{}", nl).unwrap();
+    }
+
+    fn format_escaped_tag(&mut self, net: &NodeEscapedTag) {
+        self.output(&net.tag, false, Escaping::Literal);
     }
 
     fn format_link(&mut self, node: &'a AstNode<'a>, nl: &NodeLink, entering: bool) -> bool {

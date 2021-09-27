@@ -155,6 +155,16 @@ pub enum NodeValue {
     /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is the
     /// referent image markup.
     ImageMention(String),
+
+    /// **Inline**.  Text surrounded by escaped markup. Enabled with `ext_philomena` option.
+    EscapedTag(NodeEscapedTag),
+}
+
+/// The details of escaped text.
+#[derive(Debug, Clone)]
+pub struct NodeEscapedTag {
+    /// The tag that would otherwise be interpreted as inline.
+    pub tag: Vec<u8>,
 }
 
 /// Alignment of a single table cell.

@@ -903,6 +903,19 @@ fn spoiler_in_table() {
 }
 
 #[test]
+fn spoiler_regressions() {
+    html_opts!(
+        [extension.philomena],
+        concat!("|should not be spoiler|\n||should be spoiler||\n|||should be spoiler surrounded by pipes|||"),
+        concat!(
+            "<div class=\"paragraph\">|should not be spoiler|\n",
+            "<span class=\"spoiler\">should be spoiler</span>\n",
+            "|<span class=\"spoiler\">should be spoiler surrounded by pipes</span>|</div>\n"
+        ),
+    );
+}
+
+#[test]
 fn underline() {
     html_opts!(
         [extension.philomena],
@@ -1561,6 +1574,9 @@ fn exercise_full_api<'a>() {
         }
         crate::nodes::NodeValue::ImageMention(data) => {
             let _: String = data.to_string();
+        }
+        crate::nodes::NodeValue::EscapedTag(net) => {
+            let _: Vec<u8> = net.tag;
         }
     }
 }
