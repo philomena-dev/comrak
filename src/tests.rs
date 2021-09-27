@@ -879,6 +879,30 @@ fn spoiler() {
 }
 
 #[test]
+fn spoiler_in_table() {
+    html_opts!(
+        [extension.table, extension.philomena],
+        concat!("Text | Result\n--- | ---\n`||some clever text||` | ||some clever text||\n"),
+        concat!(
+            "<table>\n",
+            "<thead>\n",
+            "<tr>\n",
+            "<th>Text</th>\n",
+            "<th>Result</th>\n",
+            "</tr>\n",
+            "</thead>\n",
+            "<tbody>\n",
+            "<tr>\n",
+            "<td><code>||some clever text||</code></td>\n",
+            "<td><span class=\"spoiler\">some clever text</span></td>\n",
+            "</tr>\n",
+            "</tbody>\n",
+            "</table>\n"
+        ),
+    );
+}
+
+#[test]
 fn underline() {
     html_opts!(
         [extension.philomena],
