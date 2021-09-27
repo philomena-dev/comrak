@@ -2,15 +2,15 @@ use crate::ctype::isspace;
 use crate::nodes::{AstNode, ListType, NodeCode, NodeValue, TableAlignment};
 use crate::parser::{ComrakOptions, ComrakPlugins};
 use once_cell::sync::Lazy;
-use regex::Regex;
 use crate::scanners;
+use crate::strings::build_opening_tag;
+use http::Uri;
+use regex::Regex;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
-use crate::strings::build_opening_tag;
-use http::Uri;
 
 /// Formats an AST as HTML, modified by the given options.
 pub fn format_document<'a>(
@@ -335,7 +335,10 @@ impl<'o> HtmlFormatter<'o> {
     fn replace_href(&mut self, buffer: &[u8]) -> Option<Vec<u8>> {
         if self.options.extension.philomena {
             if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
-                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().ok()?;
+                let uri = String::from_utf8(buffer.to_vec())
+                    .unwrap_or_else(|_| String::from("/"))
+                    .parse::<Uri>()
+                    .ok()?;
 
                 if let Some(a) = uri.authority() {
                     if reps.contains(&a.host().to_string()) {
@@ -709,7 +712,9 @@ impl<'o> HtmlFormatter<'o> {
                 if entering {
                     self.output.write_all(b"<a href=\"")?;
                     if self.options.render.unsafe_ || !dangerous_url(&nl.url) {
-                        let new_href = self.replace_href(&nl.url).unwrap_or_else(|| nl.url.to_vec());
+                        let new_href = self
+                            .replace_href(&nl.url)
+                            .unwrap_or_else(|| nl.url.to_vec());
                         self.escape_href(&new_href)?;
                     }
                     if !nl.title.is_empty() {
@@ -872,13 +877,17 @@ impl<'o> HtmlFormatter<'o> {
                     }
                 }
             }
-            NodeValue::SpoileredText => if entering {
-                self.output.write_all(b"<span class=\"spoiler\">")?;
-            } else {
-                self.output.write_all(b"</span>")?;
+            NodeValue::SpoileredText => {
+                if entering {
+                    self.output.write_all(b"<span class=\"spoiler\">")?;
+                } else {
+                    self.output.write_all(b"</span>")?;
+                }
             }
-            NodeValue::ImageMention(ref data) => if entering {
-                self.output.write_all(data.as_bytes())?;
+            NodeValue::ImageMention(ref data) => {
+                if entering {
+                    self.output.write_all(data.as_bytes())?;
+                }
             }
 
             NodeValue::EscapedTag(ref net) => {

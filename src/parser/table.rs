@@ -3,9 +3,9 @@ use crate::nodes;
 use crate::nodes::{Ast, AstNode, NodeValue, TableAlignment};
 use crate::parser::Parser;
 use crate::scanners;
+use crate::strings::trim;
 use std::cell::RefCell;
 use std::cmp::min;
-use crate::strings::trim;
 
 pub fn try_opening_block<'a, 'o, 'c>(
     parser: &mut Parser<'a, 'o, 'c>,

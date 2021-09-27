@@ -1,17 +1,18 @@
-use crate::nodes::{AstNode, NodeCode, NodeValue};
 use crate::adapters::SyntaxHighlighterAdapter;
 use crate::cm;
 use crate::html;
+use crate::nodes::{AstNode, NodeCode, NodeValue};
 #[cfg(feature = "syntect")]
 use crate::plugins::syntect::SyntectAdapter;
 use crate::strings::build_opening_tag;
-use std::collections::HashMap;
-use timebomb::timeout_ms;
-use std::fmt::Debug;
 use crate::{
     parse_document, Arena, ComrakExtensionOptions, ComrakOptions, ComrakParseOptions,
     ComrakPlugins, ComrakRenderOptions,
 };
+use propfuzz::prelude::*;
+use std::collections::HashMap;
+use std::fmt::Debug;
+use timebomb::timeout_ms;
 
 #[cfg(not(target_arch = "wasm32"))]
 use propfuzz::prelude::*;
@@ -954,7 +955,7 @@ fn separate_quotes_on_line_end() {
 fn unnest_quotes_on_line_end() {
     html(
         "> 1\n> > 2\n> 1",
-        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n",
     );
 }
 
@@ -962,7 +963,7 @@ fn unnest_quotes_on_line_end() {
 fn unnest_quotes_on_line_end_commonmark() {
     html(
         "> 1\n> > 2\n> \n> 1",
-        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n",
     );
 }
 
@@ -977,7 +978,7 @@ fn image_mention() {
 
             opts.extension.philomena = true;
             opts.extension.philomena_replacements = Some(replacements);
-        }
+        },
     );
 }
 

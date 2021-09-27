@@ -12,15 +12,15 @@ use crate::nodes::{
     NodeHtmlBlock, NodeList, NodeValue,
 };
 use once_cell::sync::Lazy;
-use regex::bytes::{Regex, RegexBuilder};
 use crate::scanners;
+use crate::strings;
+use regex::bytes::{Regex, RegexBuilder};
 use std::cell::RefCell;
 use std::cmp::min;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::mem;
 use std::str;
-use crate::strings;
 use typed_arena::Arena;
 
 const TAB_STOP: usize = 4;
@@ -266,9 +266,9 @@ pub struct ComrakExtensionOptions {
     ///
     /// assert_eq!(markdown_to_html("[test](https://example.com/path) [test](http://www.example.com/path)", &options),
     ///            "<div class=\"paragraph\"><a href=\"/path\">test</a> <a href=\"/path\">test</a></div>\n");
-    /// 
+    ///
     /// options.extension.autolink = true;
-    /// 
+    ///
     /// assert_eq!(markdown_to_html("https://example.com/path http://www.example.com/path", &options),
     ///            "<div class=\"paragraph\"><a href=\"/path\">https://example.com/path</a> <a href=\"/path\">http://www.example.com/path</a></div>\n");
     /// ```
@@ -372,7 +372,7 @@ pub struct ComrakExtensionOptions {
     /// let mut options = ComrakOptions::default();
     ///
     /// options.extension.camoifier = Some(|s| format!("https://safe-proxy.com?url={}", s));
-    /// 
+    ///
     /// assert_eq!(markdown_to_html("![](http://unsafe.evil/bad.png)", &options),
     ///            "<p><img src=\"https://safe-proxy.com?url=http://unsafe.evil/bad.png\" alt=\"\" /></p>\n");
     /// ```
@@ -939,7 +939,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
             } else if !indented
                 && match container.data.borrow().value {
                     NodeValue::Paragraph => unwrap_into(
-                        scanners::setext_heading_line(&line[self.first_nonspace..], self.options.extension.philomena),
+                        scanners::setext_heading_line(
+                            &line[self.first_nonspace..],
+                            self.options.extension.philomena,
+                        ),
                         &mut sc,
                     ),
                     _ => false,
@@ -1317,7 +1320,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
         if !self.current.same_node(last_matched_container)
             && container.same_node(last_matched_container)
             && !self.blank
-            && !matches!(container.data.borrow().value, NodeValue::BlockQuote | NodeValue::Document)
+            && !matches!(
+                container.data.borrow().value,
+                NodeValue::BlockQuote | NodeValue::Document
+            )
             && matches!(self.current.data.borrow().value, NodeValue::Paragraph)
         {
             self.add_line(self.current, line);

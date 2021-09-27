@@ -1,14 +1,16 @@
 use crate::arena_tree::Node;
 use crate::ctype::{ispunct, isspace};
 use crate::entity;
-use crate::nodes::{Ast, AstNode, NodeCode, NodeLink, NodeValue, NodeEscapedTag};
-use crate::parser::{unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference};
+use crate::nodes::{Ast, AstNode, NodeCode, NodeEscapedTag, NodeLink, NodeValue};
+use crate::parser::{
+    unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference,
+};
 use crate::scanners;
+use crate::strings;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::ptr;
 use std::str;
-use crate::strings;
 use typed_arena::Arena;
 use unicode_categories::UnicodeCategories;
 
@@ -150,8 +152,10 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                     Some(self.handle_delim(b'%'))
                 } else if self.options.extension.philomena && c == '|' {
                     Some(self.handle_delim(b'|'))
-                } else if self.options.extension.philomena && c == '>'
-                    && self.peek_char_n(1) == Some(&(b'>')) {
+                } else if self.options.extension.philomena
+                    && c == '>'
+                    && self.peek_char_n(1) == Some(&(b'>'))
+                {
                     self.pos += 1;
                     let id = self.scan_image_mention_id().unwrap_or_else(|| vec![]);
                     self.pos += 1 + id.len();
@@ -1143,7 +1147,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         let len = input.len();
         let mut i = 0;
         let mut v: Vec<u8> = Vec::new();
-    
+
         if i < len && input[i] == b'>' {
             i += 1;
             while i < len {
@@ -1160,7 +1164,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
 
         match v.len() {
             0 => None,
-            _ => Some(v)
+            _ => Some(v),
         }
     }
 
@@ -1168,10 +1172,13 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         let id_str = String::from_utf8(id).unwrap_or_else(|_| String::from(""));
         let mut html = format!("&gt;&gt;{}", &id_str);
 
-        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref(){ 
-            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
+        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref() {
+            html = replacements
+                .get(&id_str)
+                .cloned()
+                .unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
         }
-        
+
         NodeValue::ImageMention(html.to_string())
     }
 
