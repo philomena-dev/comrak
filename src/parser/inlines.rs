@@ -1,14 +1,14 @@
-use arena_tree::Node;
-use ctype::{ispunct, isspace};
-use entity;
-use nodes::{Ast, AstNode, NodeCode, NodeLink, NodeValue};
-use parser::{unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference};
-use scanners;
+use crate::arena_tree::Node;
+use crate::ctype::{ispunct, isspace};
+use crate::entity;
+use crate::nodes::{Ast, AstNode, NodeCode, NodeLink, NodeValue};
+use crate::parser::{unwrap_into_2, unwrap_into_copy, AutolinkType, Callback, ComrakOptions, Reference};
+use crate::scanners;
 use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
 use std::ptr;
 use std::str;
-use strings;
+use crate::strings;
 use typed_arena::Arena;
 use unicode_categories::UnicodeCategories;
 

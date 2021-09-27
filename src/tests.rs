@@ -1,12 +1,17 @@
 use crate::nodes::{AstNode, NodeCode, NodeValue};
-use adapters::SyntaxHighlighterAdapter;
-use cm;
-use html;
+use crate::adapters::SyntaxHighlighterAdapter;
+use crate::cm;
+use crate::html;
 #[cfg(feature = "syntect")]
-use plugins::syntect::SyntectAdapter;
+use crate::plugins::syntect::SyntectAdapter;
+use crate::strings::build_opening_tag;
 use std::collections::HashMap;
-use strings::build_opening_tag;
 use timebomb::timeout_ms;
+use std::fmt::Debug;
+use crate::{
+    parse_document, Arena, ComrakExtensionOptions, ComrakOptions, ComrakParseOptions,
+    ComrakPlugins, ComrakRenderOptions,
+};
 
 #[cfg(not(target_arch = "wasm32"))]
 use propfuzz::prelude::*;
@@ -1361,35 +1366,35 @@ fn case_insensitive_safety() {
 
 #[test]
 fn exercise_full_api<'a>() {
-    let arena = ::Arena::new();
-    let default_options = ::ComrakOptions::default();
-    let default_plugins = ::ComrakPlugins::default();
-    let node = ::parse_document(&arena, "# My document\n", &default_options);
+    let arena = crate::Arena::new();
+    let default_options = crate::ComrakOptions::default();
+    let default_plugins = crate::ComrakPlugins::default();
+    let node = crate::parse_document(&arena, "# My document\n", &default_options);
     let mut buffer = vec![];
 
     // Use every member of the exposed API without any defaults.
     // Not looking for specific outputs, just want to know if the API changes shape.
 
-    let _: std::io::Result<()> = ::format_commonmark(node, &default_options, &mut buffer);
+    let _: std::io::Result<()> = crate::format_commonmark(node, &default_options, &mut buffer);
 
-    let _: std::io::Result<()> = ::format_html(node, &default_options, &mut buffer);
+    let _: std::io::Result<()> = crate::format_html(node, &default_options, &mut buffer);
 
     let _: std::io::Result<()> =
-        ::format_html_with_plugins(node, &default_options, &mut buffer, &default_plugins);
+        crate::format_html_with_plugins(node, &default_options, &mut buffer, &default_plugins);
 
-    let _: String = ::Anchorizer::new().anchorize("header".to_string());
+    let _: String = crate::Anchorizer::new().anchorize("header".to_string());
 
-    let _: &AstNode = ::parse_document(&arena, "document", &default_options);
+    let _: &AstNode = crate::parse_document(&arena, "document", &default_options);
 
-    let _: &AstNode = ::parse_document_with_broken_link_callback(
+    let _: &AstNode = crate::parse_document_with_broken_link_callback(
         &arena,
         "document",
         &default_options,
         Some(&mut |_: &[u8]| Some((b"abc".to_vec(), b"xyz".to_vec()))),
     );
 
-    let _ = ::ComrakOptions {
-        extension: ::ComrakExtensionOptions {
+    let _ = crate::ComrakOptions {
+        extension: crate::ComrakExtensionOptions {
             strikethrough: false,
             tagfilter: false,
             table: false,
@@ -1405,11 +1410,11 @@ fn exercise_full_api<'a>() {
             front_matter_delimiter: None,
             camoifier: None,
         },
-        parse: ::ComrakParseOptions {
+        parse: crate::ComrakParseOptions {
             smart: false,
             default_info_string: Some("abc".to_string()),
         },
-        render: ::ComrakRenderOptions {
+        render: crate::ComrakRenderOptions {
             hardbreaks: false,
             github_pre_lang: false,
             width: 123456,
@@ -1436,101 +1441,101 @@ fn exercise_full_api<'a>() {
 
     let syntax_highlighter_adapter = MockAdapter {};
 
-    let _ = ::ComrakPlugins {
-        render: ::ComrakRenderPlugins {
+    let _ = crate::ComrakPlugins {
+        render: crate::ComrakRenderPlugins {
             codefence_syntax_highlighter: Some(&syntax_highlighter_adapter),
         },
     };
 
-    let _: String = ::markdown_to_html("# Yes", &default_options);
+    let _: String = crate::markdown_to_html("# Yes", &default_options);
 
     //
 
     let ast = node.data.borrow();
     let _ = ast.start_line;
     match &ast.value {
-        ::nodes::NodeValue::Document => {}
-        ::nodes::NodeValue::FrontMatter(_) => {}
-        ::nodes::NodeValue::BlockQuote => {}
-        ::nodes::NodeValue::List(nl) | ::nodes::NodeValue::Item(nl) => {
+        crate::nodes::NodeValue::Document => {}
+        crate::nodes::NodeValue::FrontMatter(_) => {}
+        crate::nodes::NodeValue::BlockQuote => {}
+        crate::nodes::NodeValue::List(nl) | crate::nodes::NodeValue::Item(nl) => {
             match nl.list_type {
-                ::nodes::ListType::Bullet => {}
-                ::nodes::ListType::Ordered => {}
+                crate::nodes::ListType::Bullet => {}
+                crate::nodes::ListType::Ordered => {}
             }
             let _: usize = nl.start;
             match nl.delimiter {
-                ::nodes::ListDelimType::Period => {}
-                ::nodes::ListDelimType::Paren => {}
+                crate::nodes::ListDelimType::Period => {}
+                crate::nodes::ListDelimType::Paren => {}
             }
             let _: u8 = nl.bullet_char;
             let _: bool = nl.tight;
         }
-        ::nodes::NodeValue::DescriptionList => {}
-        ::nodes::NodeValue::DescriptionItem(_ndi) => {}
-        ::nodes::NodeValue::DescriptionTerm => {}
-        ::nodes::NodeValue::DescriptionDetails => {}
-        ::nodes::NodeValue::CodeBlock(ncb) => {
+        crate::nodes::NodeValue::DescriptionList => {}
+        crate::nodes::NodeValue::DescriptionItem(_ndi) => {}
+        crate::nodes::NodeValue::DescriptionTerm => {}
+        crate::nodes::NodeValue::DescriptionDetails => {}
+        crate::nodes::NodeValue::CodeBlock(ncb) => {
             let _: bool = ncb.fenced;
             let _: u8 = ncb.fence_char;
             let _: usize = ncb.fence_length;
             let _: Vec<u8> = ncb.info;
             let _: Vec<u8> = ncb.literal;
         }
-        ::nodes::NodeValue::HtmlBlock(nhb) => {
+        crate::nodes::NodeValue::HtmlBlock(nhb) => {
             let _: Vec<u8> = nhb.literal;
         }
-        ::nodes::NodeValue::Paragraph => {}
-        ::nodes::NodeValue::Heading(nh) => {
+        crate::nodes::NodeValue::Paragraph => {}
+        crate::nodes::NodeValue::Heading(nh) => {
             let _: u32 = nh.level;
             let _: bool = nh.setext;
         }
-        ::nodes::NodeValue::ThematicBreak => {}
-        ::nodes::NodeValue::FootnoteDefinition(name) => {
+        crate::nodes::NodeValue::ThematicBreak => {}
+        crate::nodes::NodeValue::FootnoteDefinition(name) => {
             let _: &Vec<u8> = name;
         }
-        ::nodes::NodeValue::Table(aligns) => {
-            let _: &Vec<::nodes::TableAlignment> = aligns;
+        crate::nodes::NodeValue::Table(aligns) => {
+            let _: &Vec<crate::nodes::TableAlignment> = aligns;
             match aligns[0] {
-                ::nodes::TableAlignment::None => {}
-                ::nodes::TableAlignment::Left => {}
-                ::nodes::TableAlignment::Center => {}
-                ::nodes::TableAlignment::Right => {}
+                crate::nodes::TableAlignment::None => {}
+                crate::nodes::TableAlignment::Left => {}
+                crate::nodes::TableAlignment::Center => {}
+                crate::nodes::TableAlignment::Right => {}
             }
         }
-        ::nodes::NodeValue::TableRow(header) => {
+        crate::nodes::NodeValue::TableRow(header) => {
             let _: &bool = header;
         }
-        ::nodes::NodeValue::TableCell => {}
-        ::nodes::NodeValue::Text(text) => {
+        crate::nodes::NodeValue::TableCell => {}
+        crate::nodes::NodeValue::Text(text) => {
             let _: &Vec<u8> = text;
         }
-        ::nodes::NodeValue::TaskItem(checked) => {
+        crate::nodes::NodeValue::TaskItem(checked) => {
             let _: &bool = checked;
         }
-        ::nodes::NodeValue::SoftBreak => {}
-        ::nodes::NodeValue::LineBreak => {}
-        ::nodes::NodeValue::Code(code) => {
+        crate::nodes::NodeValue::SoftBreak => {}
+        crate::nodes::NodeValue::LineBreak => {}
+        crate::nodes::NodeValue::Code(code) => {
             let _: usize = code.num_backticks;
             let _: Vec<u8> = code.literal;
         }
-        ::nodes::NodeValue::HtmlInline(html) => {
+        crate::nodes::NodeValue::HtmlInline(html) => {
             let _: &Vec<u8> = html;
         }
-        ::nodes::NodeValue::Emph => {}
-        ::nodes::NodeValue::Strong => {}
-        ::nodes::NodeValue::Strikethrough => {}
-        ::nodes::NodeValue::Superscript => {}
-        ::nodes::NodeValue::Subscript => {}
-        ::nodes::NodeValue::SpoileredText => {}
-        ::nodes::NodeValue::Underline => {}
-        ::nodes::NodeValue::Link(nl) | ::nodes::NodeValue::Image(nl) => {
+        crate::nodes::NodeValue::Emph => {}
+        crate::nodes::NodeValue::Strong => {}
+        crate::nodes::NodeValue::Strikethrough => {}
+        crate::nodes::NodeValue::Superscript => {}
+        crate::nodes::NodeValue::Subscript => {}
+        crate::nodes::NodeValue::SpoileredText => {}
+        crate::nodes::NodeValue::Underline => {}
+        crate::nodes::NodeValue::Link(nl) | crate::nodes::NodeValue::Image(nl) => {
             let _: Vec<u8> = nl.url;
             let _: Vec<u8> = nl.title;
         }
-        ::nodes::NodeValue::FootnoteReference(name) => {
+        crate::nodes::NodeValue::FootnoteReference(name) => {
             let _: &Vec<u8> = name;
         }
-        ::nodes::NodeValue::ImageMention(data) => {
+        crate::nodes::NodeValue::ImageMention(data) => {
             let _: String = data.to_string();
         }
     }

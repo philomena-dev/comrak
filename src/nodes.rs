@@ -1,6 +1,6 @@
 //! The CommonMark AST.
 
-use arena_tree::Node;
+use crate::arena_tree::Node;
 use std::cell::RefCell;
 
 /// The core AST node enum.

@@ -1,9 +1,9 @@
 //! Adapter for the Syntect syntax highlighter plugin.
 
-use adapters::SyntaxHighlighterAdapter;
+use crate::adapters::SyntaxHighlighterAdapter;
 use regex::Regex;
 use std::collections::HashMap;
-use strings::{build_opening_tag, extract_attributes_from_tag};
+use crate::strings::{build_opening_tag, extract_attributes_from_tag};
 use syntect::highlighting::ThemeSet;
 use syntect::html::highlighted_html_for_string;
 use syntect::parsing::SyntaxSet;

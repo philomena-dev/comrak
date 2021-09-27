@@ -27,7 +27,7 @@ fn iter_nodes<'a, W: Write>(
     writer: &mut W,
     indent: usize,
 ) -> io::Result<()> {
-    use NodeValue::*;
+    use crate::NodeValue::*;
 
     macro_rules! try_node_inline {
         ($node:expr, $name:ident) => {{

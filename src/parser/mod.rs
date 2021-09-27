@@ -2,25 +2,25 @@ mod autolink;
 mod inlines;
 mod table;
 
-use adapters::SyntaxHighlighterAdapter;
-use arena_tree::Node;
-use ctype::{isdigit, isspace};
-use entity;
-use nodes;
-use nodes::{
+use crate::adapters::SyntaxHighlighterAdapter;
+use crate::arena_tree::Node;
+use crate::ctype::{isdigit, isspace};
+use crate::entity;
+use crate::nodes;
+use crate::nodes::{
     Ast, AstNode, ListDelimType, ListType, NodeCodeBlock, NodeDescriptionItem, NodeHeading,
     NodeHtmlBlock, NodeList, NodeValue,
 };
 use once_cell::sync::Lazy;
 use regex::bytes::{Regex, RegexBuilder};
-use scanners;
+use crate::scanners;
 use std::cell::RefCell;
 use std::cmp::min;
 use std::collections::HashMap;
 use std::fmt::{Debug, Formatter};
 use std::mem;
 use std::str;
-use strings;
+use crate::strings;
 use typed_arena::Arena;
 
 const TAB_STOP: usize = 4;

@@ -104,12 +104,12 @@ mod strings;
 #[cfg(test)]
 mod tests;
 
-pub use cm::format_document as format_commonmark;
-pub use cm::format_document_with_plugins as format_commonmark_with_plugins;
-pub use html::format_document as format_html;
-pub use html::format_document_with_plugins as format_html_with_plugins;
-pub use html::Anchorizer;
-pub use parser::{
+pub use crate::cm::format_document as format_commonmark;
+pub use crate::cm::format_document_with_plugins as format_commonmark_with_plugins;
+pub use crate::html::format_document as format_html;
+pub use crate::html::format_document_with_plugins as format_html_with_plugins;
+pub use crate::html::Anchorizer;
+pub use crate::parser::{
     parse_document, parse_document_with_broken_link_callback, ComrakExtensionOptions,
     ComrakOptions, ComrakParseOptions, ComrakPlugins, ComrakRenderOptions, ComrakRenderPlugins,
     ListStyleType,

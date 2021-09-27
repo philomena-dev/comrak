@@ -1,15 +1,15 @@
-use ctype::isspace;
-use nodes::{AstNode, ListType, NodeCode, NodeValue, TableAlignment};
+use crate::ctype::isspace;
+use crate::nodes::{AstNode, ListType, NodeCode, NodeValue, TableAlignment};
+use crate::parser::{ComrakOptions, ComrakPlugins};
 use once_cell::sync::Lazy;
-use parser::{ComrakOptions, ComrakPlugins};
 use regex::Regex;
-use scanners;
+use crate::scanners;
 use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
-use strings::build_opening_tag;
+use crate::strings::build_opening_tag;
 use http::Uri;
 
 /// Formats an AST as HTML, modified by the given options.

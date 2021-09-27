@@ -1,15 +1,15 @@
-use ctype::{isalpha, isdigit, ispunct, isspace};
-use nodes::TableAlignment;
-use nodes::{
+use crate::ctype::{isalpha, isdigit, ispunct, isspace};
+use crate::nodes::TableAlignment;
+use crate::nodes::{
     AstNode, ListDelimType, ListType, NodeCodeBlock, NodeHeading, NodeHtmlBlock, NodeLink,
     NodeValue,
 };
-use parser::ComrakOptions;
-use scanners;
+use crate::parser::ComrakOptions;
+use crate::scanners;
 use std;
 use std::cmp::max;
 use std::io::{self, Write};
-use {nodes, ComrakPlugins};
+use crate::{nodes, ComrakPlugins};
 
 /// Formats an AST as CommonMark, modified by the given options.
 pub fn format_document<'a>(
