@@ -1,10 +1,10 @@
 use crate::ctype::isspace;
 use crate::nodes::{AstNode, ListType, NodeCode, NodeValue, TableAlignment};
 use crate::parser::{ComrakOptions, ComrakPlugins};
-use once_cell::sync::Lazy;
 use crate::scanners;
 use crate::strings::build_opening_tag;
 use http::Uri;
+use once_cell::sync::Lazy;
 use regex::Regex;
 use std::borrow::Cow;
 use std::cell::Cell;

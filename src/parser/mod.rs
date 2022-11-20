@@ -11,9 +11,9 @@ use crate::nodes::{
     Ast, AstNode, ListDelimType, ListType, NodeCodeBlock, NodeDescriptionItem, NodeHeading,
     NodeHtmlBlock, NodeList, NodeValue,
 };
-use once_cell::sync::Lazy;
 use crate::scanners;
 use crate::strings;
+use once_cell::sync::Lazy;
 use regex::bytes::{Regex, RegexBuilder};
 use std::cell::RefCell;
 use std::cmp::min;
