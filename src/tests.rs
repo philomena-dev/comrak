@@ -2,17 +2,17 @@ use crate::adapters::SyntaxHighlighterAdapter;
 use crate::cm;
 use crate::html;
 use crate::nodes::{AstNode, NodeCode, NodeValue};
-#[cfg(feature = "syntect")]
-use crate::plugins::syntect::SyntectAdapter;
 use crate::strings::build_opening_tag;
 use crate::{
     parse_document, Arena, ComrakExtensionOptions, ComrakOptions, ComrakParseOptions,
-    ComrakPlugins, ComrakRenderOptions,
+    ComrakPlugins, ComrakRenderOptions, ListStyleType,
 };
-use propfuzz::prelude::*;
 use std::collections::HashMap;
 use std::fmt::Debug;
 use timebomb::timeout_ms;
+
+#[cfg(feature = "syntect")]
+use crate::plugins::syntect::SyntectAdapter;
 
 #[cfg(not(target_arch = "wasm32"))]
 use propfuzz::prelude::*;
@@ -20,8 +20,8 @@ use propfuzz::prelude::*;
 #[cfg(not(target_arch = "wasm32"))]
 #[propfuzz]
 fn fuzz_doesnt_crash(md: String) {
-    let options = ::ComrakOptions {
-        extension: ::ComrakExtensionOptions {
+    let options = ComrakOptions {
+        extension: ComrakExtensionOptions {
             strikethrough: true,
             tagfilter: true,
             table: true,
@@ -37,21 +37,21 @@ fn fuzz_doesnt_crash(md: String) {
             front_matter_delimiter: None,
             camoifier: None,
         },
-        parse: ::ComrakParseOptions {
+        parse: ComrakParseOptions {
             smart: true,
             default_info_string: Some("Rust".to_string()),
         },
-        render: ::ComrakRenderOptions {
+        render: ComrakRenderOptions {
             hardbreaks: true,
             github_pre_lang: true,
             width: 80,
             unsafe_: true,
             escape: false,
-            list_style: ::ListStyleType::Dash,
+            list_style: ListStyleType::Dash,
         },
     };
 
-    ::parse_document(&::Arena::new(), &md, &options);
+    parse_document(&Arena::new(), &md, &options);
 }
 
 #[track_caller]
@@ -73,12 +73,12 @@ fn compare_strs(output: &str, expected: &str, kind: &str) {
 }
 
 #[track_caller]
-fn commonmark(input: &str, expected: &str, opts: Option<&::ComrakOptions>) {
-    let arena = ::Arena::new();
-    let defaults = ::ComrakOptions::default();
+fn commonmark(input: &str, expected: &str, opts: Option<&ComrakOptions>) {
+    let arena = Arena::new();
+    let defaults = ComrakOptions::default();
     let options = opts.unwrap_or(&defaults);
 
-    let root = ::parse_document(&arena, input, options);
+    let root = parse_document(&arena, input, options);
     let mut output = vec![];
     cm::format_document(root, &options, &mut output).unwrap();
     compare_strs(&String::from_utf8(output).unwrap(), expected, "regular");
@@ -92,20 +92,20 @@ fn html(input: &str, expected: &str) {
 #[track_caller]
 fn html_opts<F>(input: &str, expected: &str, opts: F)
 where
-    F: Fn(&mut ::ComrakOptions),
+    F: Fn(&mut ComrakOptions),
 {
-    let arena = ::Arena::new();
-    let mut options = ::ComrakOptions::default();
+    let arena = Arena::new();
+    let mut options = ComrakOptions::default();
     opts(&mut options);
 
-    let root = ::parse_document(&arena, input, &options);
+    let root = parse_document(&arena, input, &options);
     let mut output = vec![];
     html::format_document(root, &options, &mut output).unwrap();
     compare_strs(&String::from_utf8(output).unwrap(), expected, "regular");
 
     let mut md = vec![];
     cm::format_document(root, &options, &mut md).unwrap();
-    let root = ::parse_document(&arena, &String::from_utf8(md).unwrap(), &options);
+    let root = parse_document(&arena, &String::from_utf8(md).unwrap(), &options);
     let mut output_from_rt = vec![];
     html::format_document(root, &options, &mut output_from_rt).unwrap();
     compare_strs(
@@ -140,18 +140,18 @@ macro_rules! html_opts {
     };
 }
 
-fn html_plugins(input: &str, expected: &str, plugins: &::ComrakPlugins) {
-    let arena = ::Arena::new();
-    let options = ::ComrakOptions::default();
+fn html_plugins(input: &str, expected: &str, plugins: &ComrakPlugins) {
+    let arena = Arena::new();
+    let options = ComrakOptions::default();
 
-    let root = ::parse_document(&arena, input, &options);
+    let root = parse_document(&arena, input, &options);
     let mut output = vec![];
     html::format_document_with_plugins(root, &options, &mut output, &plugins).unwrap();
     compare_strs(&String::from_utf8(output).unwrap(), expected, "regular");
 
     let mut md = vec![];
     cm::format_document(root, &options, &mut md).unwrap();
-    let root = ::parse_document(&arena, &String::from_utf8(md).unwrap(), &options);
+    let root = parse_document(&arena, &String::from_utf8(md).unwrap(), &options);
     let mut output_from_rt = vec![];
     html::format_document_with_plugins(root, &options, &mut output_from_rt, &plugins).unwrap();
     compare_strs(
@@ -234,7 +234,7 @@ fn syntax_highlighter_plugin() {
         "</code></pre>\n"
     );
 
-    let mut plugins = ::ComrakPlugins::default();
+    let mut plugins = ComrakPlugins::default();
     let adapter = MockAdapter {};
     plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
@@ -254,7 +254,7 @@ fn syntect_plugin() {
         "</code></pre>\n"
     );
 
-    let mut plugins = ::ComrakPlugins::default();
+    let mut plugins = ComrakPlugins::default();
     plugins.render.codefence_syntax_highlighter = Some(&adapter);
 
     html_plugins(input, expected, &plugins);
@@ -283,12 +283,12 @@ fn markdown_list_bullets() {
     let dash = concat!("- a\n");
     let plus = concat!("+ a\n");
     let star = concat!("* a\n");
-    let mut dash_opts = ::ComrakOptions::default();
-    dash_opts.render.list_style = ::ListStyleType::Dash;
-    let mut plus_opts = ::ComrakOptions::default();
-    plus_opts.render.list_style = ::ListStyleType::Plus;
-    let mut star_opts = ::ComrakOptions::default();
-    star_opts.render.list_style = ::ListStyleType::Star;
+    let mut dash_opts = ComrakOptions::default();
+    dash_opts.render.list_style = ListStyleType::Dash;
+    let mut plus_opts = ComrakOptions::default();
+    plus_opts.render.list_style = ListStyleType::Plus;
+    let mut star_opts = ComrakOptions::default();
+    star_opts.render.list_style = ListStyleType::Star;
 
     commonmark(dash, dash, Some(&dash_opts));
     commonmark(plus, dash, Some(&dash_opts));
@@ -313,7 +313,7 @@ fn thematic_breaks() {
 
 #[test]
 fn width_breaks() {
-    let mut options = ::ComrakOptions::default();
+    let mut options = ComrakOptions::default();
     options.render.width = 72;
     let input = concat!(
         "this should break because it has breakable characters. break right here newline\n",
@@ -493,7 +493,7 @@ fn backticks_empty_with_newline_should_be_space() {
 
 #[test]
 fn blockquote_hard_linebreak_space() {
-    html(">\\\n A", "<blockquote>\n<p><br />\nA</p>\n</blockquote>\n");
+    html(">\\\n A", "<p>&gt;<br />\nA</p>\n");
 }
 
 #[test]
@@ -508,9 +508,9 @@ fn blockquote_hard_linebreak_nonlazy_space() {
 fn backticks_num() {
     let input = "Some `code1`. More ``` code2 ```.\n";
 
-    let arena = ::Arena::new();
-    let options = ::ComrakOptions::default();
-    let root = ::parse_document(&arena, input, &options);
+    let arena = Arena::new();
+    let options = ComrakOptions::default();
+    let root = parse_document(&arena, input, &options);
 
     let code1 = NodeValue::Code(NodeCode {
         num_backticks: 1,
@@ -1269,19 +1269,19 @@ fn nested_tables_3() {
 #[test]
 fn no_stack_smash_html() {
     let s: String = ::std::iter::repeat('>').take(150_000).collect();
-    let arena = ::Arena::new();
-    let root = ::parse_document(&arena, &s, &::ComrakOptions::default());
+    let arena = Arena::new();
+    let root = parse_document(&arena, &s, &ComrakOptions::default());
     let mut output = vec![];
-    html::format_document(root, &::ComrakOptions::default(), &mut output).unwrap()
+    html::format_document(root, &ComrakOptions::default(), &mut output).unwrap()
 }
 
 #[test]
 fn no_stack_smash_cm() {
     let s: String = ::std::iter::repeat('>').take(150_000).collect();
-    let arena = ::Arena::new();
-    let root = ::parse_document(&arena, &s, &::ComrakOptions::default());
+    let arena = Arena::new();
+    let root = parse_document(&arena, &s, &ComrakOptions::default());
     let mut output = vec![];
-    cm::format_document(root, &::ComrakOptions::default(), &mut output).unwrap()
+    cm::format_document(root, &ComrakOptions::default(), &mut output).unwrap()
 }
 
 #[test]
@@ -1471,7 +1471,7 @@ fn exercise_full_api<'a>() {
             width: 123456,
             unsafe_: false,
             escape: false,
-            list_style: ::ListStyleType::Dash,
+            list_style: ListStyleType::Dash,
         },
     };
 
