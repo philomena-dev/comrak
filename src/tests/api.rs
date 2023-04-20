@@ -236,6 +236,8 @@ fn exercise_full_api() {
         nodes::NodeValue::WikiLink(nl) => {
             let _: String = nl.url;
         }
-        nodes::NodeValue::ImageMention(_) => {}
+        nodes::NodeValue::ImageMention(data) => {
+            let _: &String = data;
+        }
     }
 }

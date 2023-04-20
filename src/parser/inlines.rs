@@ -164,6 +164,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         if options.extension.philomena {
             s.special_chars[b'%' as usize] = true;
             s.special_chars[b'|' as usize] = true;
+            s.special_chars[b'>' as usize] = true;
         }
         for &c in &[b'"', b'\'', b'.', b'-'] {
             s.smart_chars[c as usize] = true;
@@ -249,6 +250,18 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             '$' => Some(self.handle_dollars()),
             '%' if self.options.extension.philomena => Some(self.handle_delim(b'%')),
             '|' if self.options.extension.philomena => Some(self.handle_delim(b'|')),
+            '>' if self.options.extension.philomena && self.peek_char_n(1) == Some(&(b'>')) => {
+                let start_column = self.pos;
+                self.pos += 1;
+
+                let id = self.scan_image_mention_id().unwrap_or_default();
+
+                let end_column = self.pos + 1 + id.len();
+                self.pos += 1 + id.len();
+
+                let value = self.handle_image_mention(id);
+                Some(self.make_inline(value, start_column, end_column))
+            }
             _ => {
                 let endpos = self.find_special_char();
                 let mut contents = self.input[self.pos..endpos].to_vec();
@@ -549,7 +562,12 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
     pub fn find_special_char(&self) -> usize {
         for n in self.pos..self.input.len() {
             if self.special_chars[self.input[n] as usize] {
-                if self.input[n] == b'^' && self.within_brackets {
+                if self.input[n] == b'>' {
+                    let new_idx = n + 1;
+                    if new_idx < self.input.len() && self.input[new_idx] == b'>' {
+                        return n;
+                    }
+                } else if self.input[n] == b'^' && self.within_brackets {
                     // NO OP
                 } else {
                     return n;
@@ -1709,6 +1727,43 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         }
 
         true
+    }
+
+    pub fn scan_image_mention_id(&mut self) -> Option<Vec<u8>> {
+        let input = &self.input[self.pos..];
+        let len = input.len();
+        let mut i = 0;
+        let mut v: Vec<u8> = Vec::new();
+
+        if i < len && input[i] == b'>' {
+            i += 1;
+            while i < len {
+                let chr = input[i];
+
+                match chr {
+                    b'0'..=b'9' | b't' | b's' | b'p' => v.push(chr),
+                    _ => break,
+                }
+
+                i += 1;
+            }
+        }
+
+        match v.len() {
+            0 => None,
+            _ => Some(v)
+        }
+    }
+
+    pub fn handle_image_mention(&mut self, id: Vec<u8>) -> NodeValue {
+        let id_str = String::from_utf8(id).unwrap_or_else(|_| String::from(""));
+        let mut html = format!("&gt;&gt;{}", &id_str);
+
+        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref(){ 
+            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
+        }
+
+        NodeValue::ImageMention(html.to_string())
     }
 
     pub fn spnl(&mut self) {
