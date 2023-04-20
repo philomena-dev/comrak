@@ -215,6 +215,8 @@ fn exercise_full_api() {
         nodes::NodeValue::FootnoteReference(name) => {
             let _: &String = name;
         }
-        nodes::NodeValue::ImageMention(_) => {}
+        nodes::NodeValue::ImageMention(data) => {
+            let _: &String = data;
+        }
     }
 }

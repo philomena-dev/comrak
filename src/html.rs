@@ -1000,8 +1000,8 @@ impl<'o> HtmlFormatter<'o> {
             } else {
                 self.output.write_all(b"</span>")?;
             }
-            NodeValue::ImageMention(ref data) => {
-                self.output.write_all(data[..].as_bytes())?;
+            NodeValue::ImageMention(ref data) => if entering {
+                self.output.write_all(data.as_bytes())?;
             }
         }
         Ok(false)
