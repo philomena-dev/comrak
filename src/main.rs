@@ -153,6 +153,7 @@ enum Extension {
     MultilineBlockQuotes,
     MathDollars,
     MathCode,
+    Philomena,
 }
 
 #[derive(Clone, Copy, Debug, ValueEnum)]
@@ -217,6 +218,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .header_ids(cli.header_ids)
         .footnotes(exts.contains(&Extension::Footnotes))
         .description_lists(exts.contains(&Extension::DescriptionLists))
+        .philomena(exts.contains(&Extension::Philomena))
+        .philomena_replacements(None)
         .multiline_block_quotes(exts.contains(&Extension::MultilineBlockQuotes))
         .math_dollars(exts.contains(&Extension::MathDollars))
         .math_code(exts.contains(&Extension::MathCode))

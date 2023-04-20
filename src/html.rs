@@ -813,6 +813,20 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</sup>")?;
                 }
             }
+            NodeValue::Subscript => {
+                if entering {
+                    self.output.write_all(b"<sub>")?;
+                } else {
+                    self.output.write_all(b"</sub>")?;
+                }
+            }
+            NodeValue::Underline => {
+                if entering {
+                    self.output.write_all(b"<ins>")?;
+                } else {
+                    self.output.write_all(b"</ins>")?;
+                }
+            }
             NodeValue::Link(ref nl) => {
                 if entering {
                     self.output.write_all(b"<a")?;
@@ -1037,6 +1051,14 @@ impl<'o> HtmlFormatter<'o> {
                 if entering {
                     self.render_math_inline(node, literal, display_math, dollar_math)?;
                 }
+            }
+            NodeValue::SpoileredText => if entering {
+                self.output.write_all(b"<span class=\"spoiler\">")?;
+            } else {
+                self.output.write_all(b"</span>")?;
+            }
+            NodeValue::ImageMention(ref data) => {
+                self.output.write_all(data[..].as_bytes())?;
             }
         }
         Ok(false)

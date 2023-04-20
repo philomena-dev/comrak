@@ -41,6 +41,8 @@ fn exercise_full_api() {
     extension.autolink(false);
     extension.tasklist(false);
     extension.superscript(false);
+    extension.philomena(false);
+    extension.philomena_replacements(None);
     extension.header_ids(Some("abc".to_string()));
     extension.footnotes(false);
     extension.description_lists(false);
@@ -204,6 +206,9 @@ fn exercise_full_api() {
         nodes::NodeValue::Strong => {}
         nodes::NodeValue::Strikethrough => {}
         nodes::NodeValue::Superscript => {}
+        nodes::NodeValue::Subscript => {}
+        nodes::NodeValue::SpoileredText => {}
+        nodes::NodeValue::Underline => {}
         nodes::NodeValue::Link(nl) | nodes::NodeValue::Image(nl) => {
             let _: String = nl.url;
             let _: String = nl.title;
@@ -226,5 +231,6 @@ fn exercise_full_api() {
             let _: bool = math.dollar_math;
             let _: String = math.literal;
         }
+        nodes::NodeValue::ImageMention(_) => {}
     }
 }

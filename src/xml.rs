@@ -207,6 +207,8 @@ impl<'o> XmlFormatter<'o> {
                 NodeValue::Emph => {}
                 NodeValue::Strikethrough => {}
                 NodeValue::Superscript => {}
+                NodeValue::Subscript => {}
+                NodeValue::Underline => {}
                 NodeValue::Link(ref nl) | NodeValue::Image(ref nl) => {
                     self.output.write_all(b" destination=\"")?;
                     self.escape(nl.url.as_bytes())?;
@@ -272,6 +274,14 @@ impl<'o> XmlFormatter<'o> {
                     self.escape(math.literal.as_bytes())?;
                     write!(self.output, "</{}", ast.value.xml_node_name())?;
                     was_literal = true;
+                }
+                NodeValue::SpoileredText => if entering {
+                    self.output.write_all(b"<spoiler>")?;
+                } else {
+                    self.output.write_all(b"</spoiler>")?;
+                }
+                NodeValue::ImageMention(ref data) => {
+                    self.output.write_all(data[..].as_bytes())?;
                 }
             }
 

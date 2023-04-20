@@ -14,6 +14,8 @@ fn propfuzz_doesnt_crash(md: String) {
             autolink: true,
             tasklist: true,
             superscript: true,
+            philomena: true,
+            philomena_replacements: None,
             header_ids: Some("user-content-".to_string()),
             footnotes: true,
             description_lists: true,
