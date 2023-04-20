@@ -19,7 +19,7 @@ exclude = [
     "/spec_out.txt",
 ]
 resolver = "2"
-edition = "2018"
+edition = "2021"
 
 [profile.release]
 lto = true

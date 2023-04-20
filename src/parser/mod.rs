@@ -31,7 +31,7 @@ const TAB_STOP: usize = 4;
 const CODE_INDENT: usize = 4;
 
 macro_rules! node_matches {
-    ($node:expr, $( $pat:pat )|+) => {{
+    ($node:expr, $( $pat:pat_param )|+) => {{
         matches!(
             $node.data.borrow().value,
             $( $pat )|+
