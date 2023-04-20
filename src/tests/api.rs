@@ -50,6 +50,7 @@ fn exercise_full_api() {
     extension.math_dollars(false);
     extension.math_code(false);
     extension.front_matter_delimiter(None);
+    extension.camoifier(None);
     #[cfg(feature = "shortcodes")]
     extension.shortcodes(true);
 

@@ -161,6 +161,7 @@ macro_rules! html_opts {
                 math_code: true,
                 front_matter_delimiter: Some("---".to_string()),
                 shortcodes: true,
+                camoifier: true,
             },
             parse: $crate::ParseOptions {
                 smart: true,
