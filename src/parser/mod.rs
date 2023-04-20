@@ -248,9 +248,9 @@ pub struct ComrakExtensionOptions {
     /// options.extension.philomena_replacements = Some(replacements);
     ///
     /// assert_eq!(markdown_to_html("||spoilered||", &options),
-    ///            "<p><span class=\"spoiler\">spoilered</span></p>\n");
+    ///            "<div class=\"paragraph\"><span class=\"spoiler\">spoilered</span></div>\n");
     /// assert_eq!(markdown_to_html("%subscript%", &options),
-    ///            "<p><sub>subscript</sub></p>\n");
+    ///            "<div class=\"paragraph\"><sub>subscript</sub></div>\n");
     /// ```
     pub philomena: bool,
 
@@ -267,7 +267,7 @@ pub struct ComrakExtensionOptions {
     /// options.extension.philomena_replacements = Some(replacements);
     ///
     /// assert_eq!(markdown_to_html(">>1234p", &options),
-    ///            "<p><div id=\"1234\"></div></p>\n");
+    ///            "<div class=\"paragraph\"><div id=\"1234\"></div></div>\n");
     /// ```
     pub philomena_replacements: Option<HashMap<String, String>>,
 

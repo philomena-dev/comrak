@@ -5,7 +5,7 @@ fn subscript() {
     html_opts!(
         [extension.philomena],
         concat!("e = mc%2%.\n"),
-        concat!("<p>e = mc<sub>2</sub>.</p>\n"),
+        concat!("<div class=\"paragraph\">e = mc<sub>2</sub>.</div>\n"),
     );
 }
 
@@ -14,7 +14,7 @@ fn spoiler() {
     html_opts!(
         [extension.philomena],
         concat!("The ||dog dies at the end of Marley and Me||.\n"),
-        concat!("<p>The <span class=\"spoiler\">dog dies at the end of Marley and Me</span>.</p>\n"),
+        concat!("<div class=\"paragraph\">The <span class=\"spoiler\">dog dies at the end of Marley and Me</span>.</div>\n"),
     );
 }
 
@@ -23,7 +23,7 @@ fn underline() {
     html_opts!(
         [extension.philomena],
         concat!("__underlined__\n"),
-        concat!("<p><ins>underlined</ins></p>\n"),
+        concat!("<div class=\"paragraph\"><ins>underlined</ins></div>\n"),
     );
 }
 
@@ -65,7 +65,7 @@ fn philomena_images() {
     html_opts!(
         [extension.philomena],
         concat!("![full](http://i.imgur.com/QqK1vq7.png)"),
-        concat!("<p><span class=\"imgspoiler\"><img src=\"http://i.imgur.com/QqK1vq7.png\" alt=\"full\" /></span></p>\n"),
+        concat!("<div class=\"paragraph\"><span class=\"imgspoiler\"><img src=\"http://i.imgur.com/QqK1vq7.png\" alt=\"full\" /></span></div>\n"),
     );
 }
 
@@ -73,7 +73,7 @@ fn philomena_images() {
 fn image_mention() {
     html_opts_no_roundtrip(
         "hello world >>1234p >>1337",
-        "<p>hello world <div id=\"1234\">p</div> &gt;&gt;1337</p>\n",
+        "<div class=\"paragraph\">hello world <div id=\"1234\">p</div> &gt;&gt;1337</div>\n",
         |mut opts| {
             let mut replacements = HashMap::new();
             replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
