@@ -231,6 +231,8 @@ fn exercise_full_api() {
             let _: bool = math.dollar_math;
             let _: String = math.literal;
         }
-        nodes::NodeValue::ImageMention(_) => {}
+        nodes::NodeValue::ImageMention(data) => {
+            let _: &String = data;
+        }
     }
 }

@@ -26,3 +26,51 @@ fn underline() {
         concat!("<p><ins>underlined</ins></p>\n"),
     );
 }
+
+#[test]
+fn greentext_preserved() {
+    html_opts!(
+        [render.hardbreaks],
+        ">implying\n>>implying",
+        "<p>&gt;implying<br />\n&gt;&gt;implying</p>\n"
+    );
+}
+
+#[test]
+fn separate_quotes_on_line_end() {
+    html(
+        "> 1\n>\n> 2",
+        "<blockquote>\n<p>1</p>\n</blockquote>\n<p>&gt;</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
+fn unnest_quotes_on_line_end() {
+    html(
+        "> 1\n> > 2\n> 1",
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
+fn unnest_quotes_on_line_end_commonmark() {
+    html(
+        "> 1\n> > 2\n> \n> 1",
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+    );
+}
+
+#[test]
+fn image_mention() {
+    html_opts_no_roundtrip(
+        "hello world >>1234p >>1337",
+        "<p>hello world <div id=\"1234\">p</div> &gt;&gt;1337</p>\n",
+        |opts| {
+            let mut replacements = HashMap::new();
+            replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
+
+            opts.extension.philomena = true;
+            opts.extension.philomena_replacements = Some(replacements);
+        }
+    );
+}

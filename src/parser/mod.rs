@@ -278,6 +278,9 @@ pub struct ExtensionOptions {
     ///
     /// options.extension.philomena = true;
     /// options.extension.philomena_replacements = Some(replacements);
+    ///
+    /// assert_eq!(markdown_to_html(">>1234p", &options),
+    ///            "<p><div id=\"1234\"></div></p>\n");
     /// ```
     pub philomena_replacements: Option<HashMap<String, String>>,
 
@@ -1135,7 +1138,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
                     self.first_nonspace + 1,
                 );
                 self.advance_offset(line, first_nonspace + matched - offset, false);
-            } else if !indented && line[self.first_nonspace] == b'>' {
+            } else if !indented
+                && line[self.first_nonspace] == b'>'
+                && strings::is_space_or_tab(line[self.first_nonspace + 1])
+            {
                 let blockquote_startpos = self.first_nonspace;
 
                 let offset = self.first_nonspace + 1 - self.offset;
@@ -1405,7 +1411,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
 
     fn parse_block_quote_prefix(&mut self, line: &[u8]) -> bool {
         let indent = self.indent;
-        if indent <= 3 && line[self.first_nonspace] == b'>' {
+        if indent <= 3
+            && line[self.first_nonspace] == b'>'
+            && strings::is_space_or_tab(line[self.first_nonspace + 1])
+        {
             self.advance_offset(line, indent + 1, true);
 
             if strings::is_space_or_tab(line[self.offset]) {
@@ -1692,6 +1701,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
         if !self.current.same_node(last_matched_container)
             && container.same_node(last_matched_container)
             && !self.blank
+            && !matches!(container.data.borrow().value, NodeValue::BlockQuote | NodeValue::Document)
             && node_matches!(self.current, NodeValue::Paragraph)
         {
             self.add_line(self.current, line);

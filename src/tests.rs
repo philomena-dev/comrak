@@ -117,6 +117,22 @@ fn html_opts_w(input: &str, expected: &str, options: &Options) {
     );
 }
 
+#[track_caller]
+fn html_opts_no_roundtrip<F>(input: &str, expected: &str, opts: F)
+where
+    F: Fn(&mut ComrakOptions),
+{
+    let mut options = ComrakOptions::default();
+    opts(&mut options);
+
+    let arena = Arena::new();
+
+    let root = parse_document(&arena, input, &options);
+    let mut output = vec![];
+    html::format_document(root, &options, &mut output).unwrap();
+    compare_strs(&String::from_utf8(output).unwrap(), expected, "regular", input);
+}
+
 macro_rules! html_opts {
     ([$($optclass:ident.$optname:ident),*], $lhs:expr, $rhs:expr,) => {
         html_opts!([$($optclass.$optname),*], $lhs, $rhs)
