@@ -13,6 +13,7 @@ use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
+use http::Uri;
 
 use crate::adapters::HeadingMeta;
 
@@ -390,6 +391,25 @@ impl<'o> HtmlFormatter<'o> {
 
     fn escape_href(&mut self, buffer: &[u8]) -> io::Result<()> {
         escape_href(&mut self.output, buffer)
+    }
+
+    fn replace_href(&mut self, buffer: &[u8]) -> Option<Vec<u8>> {
+        if self.options.extension.philomena {
+            if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
+                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().ok()?;
+
+                if let Some(a) = uri.authority() {
+                    if reps.contains(&a.host().to_string()) {
+                        match uri.path_and_query() {
+                            Some(pq) => return Some(pq.as_str().as_bytes().to_vec()),
+                            None => return Some("/".as_bytes().to_vec()),
+                        }
+                    }
+                }
+            }
+        }
+
+        Some(buffer.to_vec())
     }
 
     fn format<'a>(&mut self, node: &'a AstNode<'a>, plain: bool) -> io::Result<()> {
@@ -842,7 +862,8 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b" href=\"")?;
                     let url = nl.url.as_bytes();
                     if self.options.render.unsafe_ || !dangerous_url(url) {
-                        self.escape_href(url)?;
+                        let new_href = self.replace_href(url).unwrap_or_else(|| url.to_vec());
+                        self.escape_href(&new_href)?;
                     }
                     if !nl.title.is_empty() {
                         self.output.write_all(b"\" title=\"")?;

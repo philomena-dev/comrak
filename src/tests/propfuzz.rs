@@ -16,6 +16,7 @@ fn propfuzz_doesnt_crash(md: String) {
             superscript: true,
             philomena: true,
             philomena_replacements: None,
+            philomena_domains: None,
             header_ids: Some("user-content-".to_string()),
             footnotes: true,
             description_lists: true,
