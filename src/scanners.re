@@ -313,11 +313,12 @@ pub fn dangerous_url(s: &[u8]) -> Option<usize> {
 
 /*!re2c
 
+    table_spoiler = ['|']['|'];
     table_spacechar = [ \t\v\f];
     table_newline = [\r]?[\n];
 
     table_delimiter = (table_spacechar*[:]?[-]+[:]?table_spacechar*);
-    table_cell = (escaped_char|[^\x00|\r\n])+;
+    table_cell = (escaped_char|table_spoiler|[^\x00|\r\n])+;
 
 */
 
