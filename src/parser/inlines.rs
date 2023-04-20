@@ -904,8 +904,12 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                 NodeValue::Superscript
             } else if self.options.extension.philomena && opener_char == b'%' {
                 NodeValue::Subscript
-            } else if self.options.extension.philomena && opener_char == b'|' && use_delims == 2 {
-                NodeValue::SpoileredText
+            } else if self.options.extension.philomena && opener_char == b'|' {
+                if use_delims == 2 {
+                    NodeValue::SpoileredText
+                } else {
+                    NodeValue::EscapedTag("|".to_owned())
+                }
             } else if self.options.extension.philomena && opener_char == b'_' && use_delims == 2 {
                 NodeValue::Underline
             } else if use_delims == 1 {

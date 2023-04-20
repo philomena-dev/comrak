@@ -164,6 +164,10 @@ pub enum NodeValue {
     #[cfg(feature = "shortcodes")]
     /// **Inline**. An Emoji character generated from a shortcode. Enable with feature "shortcodes".
     ShortCode(NodeShortCode),
+
+    /// **Inline**. Text surrounded by escaped markup. Enabled with `ext_philomena` option.
+    /// The `String` is the tag to be escaped.
+    EscapedTag(String),
 }
 
 /// Alignment of a single table cell.
@@ -440,6 +444,7 @@ impl NodeValue {
             NodeValue::FootnoteReference(_) => "footnote_reference",
             NodeValue::SpoileredText => "spoilered_text",
             NodeValue::ImageMention(_) => "image_mention",
+            NodeValue::EscapedTag(_) => "escaped_tag",
             #[cfg(feature = "shortcodes")]
             NodeValue::ShortCode(_) => "shortcode",
         }
