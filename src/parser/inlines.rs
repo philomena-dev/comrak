@@ -218,7 +218,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
             '~' if self.options.extension.strikethrough => Some(self.handle_delim(b'~')),
             '^' if self.options.extension.superscript && !self.within_brackets => {
                 Some(self.handle_delim(b'^'))
-            },
+            }
             '%' if self.options.extension.philomena => Some(self.handle_delim(b'%')),
             '|' if self.options.extension.philomena => Some(self.handle_delim(b'|')),
             '>' if self.options.extension.philomena && self.peek_char_n(1) == Some(&(b'>')) => {
@@ -1402,7 +1402,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
 
         match v.len() {
             0 => None,
-            _ => Some(v)
+            _ => Some(v),
         }
     }
 
@@ -1410,8 +1410,11 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
         let id_str = String::from_utf8(id).unwrap_or_else(|_| String::from(""));
         let mut html = format!("&gt;&gt;{}", &id_str);
 
-        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref(){ 
-            html = replacements.get(&id_str).cloned().unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
+        if let Some(replacements) = &self.options.extension.philomena_replacements.as_ref() {
+            html = replacements
+                .get(&id_str)
+                .cloned()
+                .unwrap_or_else(|| format!("&gt;&gt;{}", &id_str));
         }
 
         NodeValue::ImageMention(html.to_string())

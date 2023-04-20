@@ -252,10 +252,12 @@ impl<'o> XmlFormatter<'o> {
                     self.escape(nsc.shortcode().as_bytes())?;
                     self.output.write_all(b"\"")?;
                 }
-                NodeValue::SpoileredText => if entering {
-                    self.output.write_all(b"<spoiler>")?;
-                } else {
-                    self.output.write_all(b"</spoiler>")?;
+                NodeValue::SpoileredText => {
+                    if entering {
+                        self.output.write_all(b"<spoiler>")?;
+                    } else {
+                        self.output.write_all(b"</spoiler>")?;
+                    }
                 }
                 NodeValue::ImageMention(ref data) => {
                     self.output.write_all(data.as_bytes())?;

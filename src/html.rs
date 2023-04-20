@@ -3,6 +3,7 @@ use crate::ctype::isspace;
 use crate::nodes::{AstNode, ListType, NodeCode, NodeValue, TableAlignment};
 use crate::parser::{ComrakOptions, ComrakPlugins};
 use crate::scanners;
+use http::Uri;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::borrow::Cow;
@@ -10,7 +11,6 @@ use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
-use http::Uri;
 
 use crate::adapters::HeadingMeta;
 
@@ -399,7 +399,10 @@ impl<'o> HtmlFormatter<'o> {
     fn replace_href(&mut self, buffer: &[u8]) -> Option<Vec<u8>> {
         if self.options.extension.philomena {
             if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
-                let uri = String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/")).parse::<Uri>().ok()?;
+                let uri = String::from_utf8(buffer.to_vec())
+                    .unwrap_or_else(|_| String::from("/"))
+                    .parse::<Uri>()
+                    .ok()?;
 
                 if let Some(a) = uri.authority() {
                     if reps.contains(&a.host().to_string()) {
@@ -1036,13 +1039,17 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</li>\n")?;
                 }
             }
-            NodeValue::SpoileredText => if entering {
-                self.output.write_all(b"<span class=\"spoiler\">")?;
-            } else {
-                self.output.write_all(b"</span>")?;
+            NodeValue::SpoileredText => {
+                if entering {
+                    self.output.write_all(b"<span class=\"spoiler\">")?;
+                } else {
+                    self.output.write_all(b"</span>")?;
+                }
             }
-            NodeValue::ImageMention(ref data) => if entering {
-                self.output.write_all(data.as_bytes())?;
+            NodeValue::ImageMention(ref data) => {
+                if entering {
+                    self.output.write_all(data.as_bytes())?;
+                }
             }
             NodeValue::EscapedTag(ref net) => {
                 self.output.write_all(net.as_bytes())?;
