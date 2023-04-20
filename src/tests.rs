@@ -163,6 +163,7 @@ macro_rules! html_opts {
                 shortcodes: true,
                 wikilinks_title_after_pipe: true,
                 wikilinks_title_before_pipe: true,
+                camoifier: true,
             },
             parse: $crate::ParseOptions {
                 smart: true,

@@ -245,7 +245,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .math_code(exts.contains(&Extension::MathCode))
         .wikilinks_title_after_pipe(exts.contains(&Extension::WikilinksTitleAfterPipe))
         .wikilinks_title_before_pipe(exts.contains(&Extension::WikilinksTitleBeforePipe))
-        .front_matter_delimiter(cli.front_matter_delimiter);
+        .front_matter_delimiter(cli.front_matter_delimiter)
+        .camoifier(None);
 
     #[cfg(feature = "shortcodes")]
     {
