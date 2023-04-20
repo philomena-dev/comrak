@@ -25,6 +25,7 @@ fn propfuzz_doesnt_crash(md: String) {
             front_matter_delimiter: None,
             #[cfg(feature = "shortcodes")]
             shortcodes: true,
+            camoifier: None,
         },
         parse: ParseOptions {
             smart: true,

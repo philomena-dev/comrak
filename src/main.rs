@@ -223,7 +223,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .multiline_block_quotes(exts.contains(&Extension::MultilineBlockQuotes))
         .math_dollars(exts.contains(&Extension::MathDollars))
         .math_code(exts.contains(&Extension::MathCode))
-        .front_matter_delimiter(cli.front_matter_delimiter);
+        .front_matter_delimiter(cli.front_matter_delimiter)
+        .camoifier(None);
 
     #[cfg(feature = "shortcodes")]
     {

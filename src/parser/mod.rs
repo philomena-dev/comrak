@@ -459,6 +459,19 @@ pub struct ExtensionOptions {
     ///            "<p>Happy Friday! 😄</p>\n");
     /// ```
     pub shortcodes: bool,
+
+    /// Wraps image URLs using camoifier.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, ComrakOptions};
+    /// let mut options = ComrakOptions::default();
+    ///
+    /// options.extension.camoifier = Some(|s| format!("https://safe-proxy.com?url={}", s));
+    ///
+    /// assert_eq!(markdown_to_html("![](http://unsafe.evil/bad.png)", &options),
+    ///            "<p><img src=\"https://safe-proxy.com?url=http://unsafe.evil/bad.png\" alt=\"\" /></p>\n");
+    /// ```
+    pub camoifier: Option<fn(String) -> String>,
 }
 
 #[non_exhaustive]
