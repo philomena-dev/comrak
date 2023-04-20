@@ -136,6 +136,7 @@ macro_rules! html_opts {
                 description_lists: true,
                 front_matter_delimiter: Some("---".to_string()),
                 shortcodes: true,
+                camoifier: true,
             },
             parse: $crate::ComrakParseOptions {
                 smart: true,

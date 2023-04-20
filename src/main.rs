@@ -212,6 +212,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             front_matter_delimiter: cli.front_matter_delimiter,
             #[cfg(feature = "shortcodes")]
             shortcodes: cli.gemojis,
+            camoifier: None,
         },
         parse: ComrakParseOptions {
             smart: cli.smart,

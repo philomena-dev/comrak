@@ -50,6 +50,7 @@ fn exercise_full_api() {
             front_matter_delimiter: None,
             #[cfg(feature = "shortcodes")]
             shortcodes: true,
+            camoifier: None,
         },
         parse: ComrakParseOptions {
             smart: false,

@@ -838,7 +838,11 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b" src=\"")?;
                     let url = nl.url.as_bytes();
                     if self.options.render.unsafe_ || !dangerous_url(url) {
-                        self.escape_href(url)?;
+                        if let Some(c) = self.options.extension.camoifier {
+                            self.escape_href(c(nl.url.clone()).as_ref())?
+                        } else {
+                            self.escape_href(url)?;
+                        }
                     }
                     self.output.write_all(b"\" alt=\"")?;
                     return Ok(true);
