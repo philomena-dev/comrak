@@ -12,6 +12,7 @@ mod footnotes;
 mod fuzz;
 mod header_ids;
 mod options;
+mod philomena;
 mod plugins;
 mod propfuzz;
 mod regressions;
@@ -112,6 +113,8 @@ macro_rules! html_opts {
                 autolink: true,
                 tasklist: true,
                 superscript: true,
+                philomena: true,
+                philomena_replacements: None,
                 header_ids: Some("user-content-".to_string()),
                 footnotes: true,
                 description_lists: true,

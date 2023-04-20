@@ -42,6 +42,8 @@ fn exercise_full_api() {
             autolink: false,
             tasklist: false,
             superscript: false,
+            philomena: false,
+            philomena_replacements: None,
             header_ids: Some("abc".to_string()),
             footnotes: false,
             description_lists: false,
@@ -199,6 +201,9 @@ fn exercise_full_api() {
         nodes::NodeValue::Strong => {}
         nodes::NodeValue::Strikethrough => {}
         nodes::NodeValue::Superscript => {}
+        nodes::NodeValue::Subscript => {}
+        nodes::NodeValue::SpoileredText => {}
+        nodes::NodeValue::Underline => {}
         nodes::NodeValue::Link(nl) | nodes::NodeValue::Image(nl) => {
             let _: String = nl.url;
             let _: String = nl.title;
@@ -210,5 +215,6 @@ fn exercise_full_api() {
         nodes::NodeValue::FootnoteReference(name) => {
             let _: &String = name;
         }
+        nodes::NodeValue::ImageMention(_) => {}
     }
 }
