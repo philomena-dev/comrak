@@ -44,6 +44,7 @@ fn exercise_full_api() {
             superscript: false,
             philomena: false,
             philomena_replacements: None,
+            philomena_domains: None,
             header_ids: Some("abc".to_string()),
             footnotes: false,
             description_lists: false,

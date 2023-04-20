@@ -209,6 +209,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             description_lists: exts.contains(&Extension::DescriptionLists),
             philomena: exts.contains(&Extension::Philomena),
             philomena_replacements: None,
+            philomena_domains: None,
             front_matter_delimiter: cli.front_matter_delimiter,
             #[cfg(feature = "shortcodes")]
             shortcodes: cli.gemojis,
