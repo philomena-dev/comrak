@@ -236,5 +236,8 @@ fn exercise_full_api() {
         nodes::NodeValue::ImageMention(data) => {
             let _: &String = data;
         }
+        nodes::NodeValue::EscapedTag(data) => {
+            let _: &String = data;
+        }
     }
 }

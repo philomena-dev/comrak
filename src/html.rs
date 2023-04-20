@@ -1101,6 +1101,9 @@ impl<'o> HtmlFormatter<'o> {
             NodeValue::ImageMention(ref data) => if entering {
                 self.output.write_all(data.as_bytes())?;
             }
+            NodeValue::EscapedTag(ref net) => {
+                self.output.write_all(net.as_bytes())?;
+            }
         }
         Ok(false)
     }
