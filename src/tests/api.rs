@@ -43,6 +43,7 @@ fn exercise_full_api() {
     extension.superscript(false);
     extension.philomena(false);
     extension.philomena_replacements(None);
+    extension.philomena_domains(None);
     extension.header_ids(Some("abc".to_string()));
     extension.footnotes(false);
     extension.description_lists(false);

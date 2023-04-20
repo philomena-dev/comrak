@@ -239,6 +239,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .description_lists(exts.contains(&Extension::DescriptionLists))
         .philomena(exts.contains(&Extension::Philomena))
         .philomena_replacements(None)
+        .philomena_domains(None)
         .multiline_block_quotes(exts.contains(&Extension::MultilineBlockQuotes))
         .math_dollars(exts.contains(&Extension::MathDollars))
         .math_code(exts.contains(&Extension::MathCode))
