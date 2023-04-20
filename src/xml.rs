@@ -281,7 +281,10 @@ impl<'o> XmlFormatter<'o> {
                     self.output.write_all(b"</spoiler>")?;
                 }
                 NodeValue::ImageMention(ref data) => {
-                    self.output.write_all(data[..].as_bytes())?;
+                    self.output.write_all(data.as_bytes())?;
+                }
+                NodeValue::EscapedTag(ref data) => {
+                    self.output.write_all(data.as_bytes())?;
                 }
             }
 

@@ -195,6 +195,10 @@ pub enum NodeValue {
 
     /// **Inline**.  A character that has been [escaped](https://github.github.com/gfm/#backslash-escapes)
     Escaped,
+
+    /// **Inline**. Text surrounded by escaped markup. Enabled with `ext_philomena` option.
+    /// The `String` is the tag to be escaped.
+    EscapedTag(String),
 }
 
 /// Alignment of a single table cell.
@@ -501,6 +505,7 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::SpoileredText => "spoilered_text",
             NodeValue::ImageMention(_) => "image_mention",
+            NodeValue::EscapedTag(_) => "escaped_tag",
             #[cfg(feature = "shortcodes")]
             NodeValue::ShortCode(_) => "shortcode",
             NodeValue::MultilineBlockQuote(_) => "multiline_block_quote",
