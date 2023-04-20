@@ -141,6 +141,12 @@ pub enum NodeValue {
     /// **Inline**.  Superscript.  Enabled with `ext_superscript` option.
     Superscript,
 
+    /// **Inline**.  Subscript. Enabled with `ext_philomena` option.
+    Subscript,
+
+    /// **Inline**.  Underline. Enabled with `ext_philomena` option.
+    Underline,
+
     /// **Inline**.  A [link](https://github.github.com/gfm/#links) to some URL, with possible
     /// title.
     Link(NodeLink),
@@ -150,6 +156,13 @@ pub enum NodeValue {
 
     /// **Inline**.  A footnote reference.
     FootnoteReference(NodeFootnoteReference),
+
+    /// **Inline**.  Spoilered text.  Enabled with `ext_philomena` option.
+    SpoileredText,
+
+    /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is the
+    /// referent image markup.
+    ImageMention(String),
 
     #[cfg(feature = "shortcodes")]
     /// **Inline**. An Emoji character generated from a shortcode. Enable with feature "shortcodes".
@@ -494,6 +507,10 @@ impl NodeValue {
             NodeValue::TaskItem { .. } => "taskitem",
             NodeValue::Superscript => "superscript",
             NodeValue::FootnoteReference(..) => "footnote_reference",
+            NodeValue::Subscript => "subscript",
+            NodeValue::Underline => "underline",
+            NodeValue::SpoileredText => "spoilered_text",
+            NodeValue::ImageMention(_) => "image_mention",
             #[cfg(feature = "shortcodes")]
             NodeValue::ShortCode(_) => "shortcode",
             NodeValue::MultilineBlockQuote(_) => "multiline_block_quote",
