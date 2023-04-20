@@ -1260,7 +1260,7 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
             } else if !indented
                 && node_matches!(container, NodeValue::Paragraph)
                 && unwrap_into(
-                    scanners::setext_heading_line(&line[self.first_nonspace..]),
+                    if self.options.extension.philomena { None } else { scanners::setext_heading_line(&line[self.first_nonspace..]) },
                     &mut sc,
                 )
             {
