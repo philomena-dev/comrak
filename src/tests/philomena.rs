@@ -129,6 +129,35 @@ fn philomena_images() {
 }
 
 #[test]
+fn no_empty_link() {
+    html(
+        "[](https://example.com/evil.domain.for.seo.spam)",
+        "<p>[](https://example.com/evil.domain.for.seo.spam)</p>\n",
+    );
+
+    html(
+        "[    ](https://example.com/evil.domain.for.seo.spam)",
+        "<p>[    ](https://example.com/evil.domain.for.seo.spam)</p>\n",
+    );
+}
+
+#[test]
+fn empty_image_allowed() {
+    html(
+        "![   ](https://example.com/evil.domain.for.seo.spam)",
+        "<p><img src=\"https://example.com/evil.domain.for.seo.spam\" alt=\"   \" /></p>\n",
+    );
+}
+
+#[test]
+fn image_inside_link_allowed() {
+    html(
+        "[![](https://example.com/image.png)](https://example.com/)",
+        "<p><a href=\"https://example.com/\"><img src=\"https://example.com/image.png\" alt=\"\" /></a></p>\n",
+    );
+}
+
+#[test]
 fn image_mention() {
     html_opts_no_roundtrip(
         "hello world >>1234p >>1337",
