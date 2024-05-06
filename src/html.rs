@@ -396,16 +396,19 @@ impl<'o> HtmlFormatter<'o> {
     fn replace_href(&mut self, buffer: &[u8]) -> Option<Vec<u8>> {
         if self.options.extension.philomena {
             if let Some(reps) = self.options.extension.philomena_domains.as_ref() {
-                let uri = String::from_utf8(buffer.to_vec())
-                    .unwrap_or_else(|_| String::from("/"))
-                    .parse::<Uri>()
-                    .ok()?;
+                let linkstring =
+                    String::from_utf8(buffer.to_vec()).unwrap_or_else(|_| String::from("/"));
+
+                let uri = linkstring.parse::<Uri>().ok()?;
 
                 if let Some(a) = uri.authority() {
                     if reps.contains(&a.host().to_string()) {
-                        match uri.path_and_query() {
-                            Some(pq) => return Some(pq.as_str().as_bytes().to_vec()),
-                            None => return Some("/".as_bytes().to_vec()),
+                        if let Ok(re) =
+                            Regex::new(&format!(r#"^http(s)?://({})"#, regex::escape(a.host())))
+                        {
+                            return Some(
+                                re.replace(&linkstring, "").to_string().as_bytes().to_vec(),
+                            );
                         }
                     }
                 }

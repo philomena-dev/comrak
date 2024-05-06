@@ -171,3 +171,46 @@ fn image_mention() {
         },
     );
 }
+
+#[test]
+fn auto_relative_links() {
+    html_opts_no_roundtrip(
+        "[some link text](https://example.com/some/path)",
+        "<div class=\"paragraph\"><a href=\"/some/path\">some link text</a></div>\n",
+        |opts| {
+            opts.extension.autolink = true;
+            opts.extension.philomena = true;
+            opts.extension.philomena_domains = Some(vec![String::from("example.com")]);
+        },
+    );
+
+    html_opts_no_roundtrip(
+        "https://example.com/some/path",
+        "<div class=\"paragraph\"><a href=\"/some/path\">https://example.com/some/path</a></div>\n",
+        |opts| {
+            opts.extension.autolink = true;
+            opts.extension.philomena = true;
+            opts.extension.philomena_domains = Some(vec![String::from("example.com")]);
+        },
+    );
+
+    html_opts_no_roundtrip(
+        "[some link text](https://example.com/some/path?parameter=aaaaaa&other_parameter=bbbbbb#id12345)",
+        "<div class=\"paragraph\"><a href=\"/some/path?parameter=aaaaaa&amp;other_parameter=bbbbbb#id12345\">some link text</a></div>\n",
+        |opts| {
+            opts.extension.autolink = true;
+            opts.extension.philomena = true;
+            opts.extension.philomena_domains = Some(vec![String::from("example.com")]);
+        },
+    );
+
+    html_opts_no_roundtrip(
+        "https://example.com/some/path?parameter=aaaaaa&other_parameter=bbbbbb#id12345",
+        "<div class=\"paragraph\"><a href=\"/some/path?parameter=aaaaaa&amp;other_parameter=bbbbbb#id12345\">https://example.com/some/path?parameter=aaaaaa&amp;other_parameter=bbbbbb#id12345</a></div>\n",
+        |opts| {
+            opts.extension.autolink = true;
+            opts.extension.philomena = true;
+            opts.extension.philomena_domains = Some(vec![String::from("example.com")]);
+        },
+    );
+}
