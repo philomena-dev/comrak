@@ -227,7 +227,7 @@ impl<'a, 'r, 'o, 'd, 'i, 'c, 'subj> Subject<'a, 'r, 'o, 'd, 'i, 'c, 'subj> {
                 let start_column = self.pos;
                 self.pos += 1;
 
-                let id = self.scan_image_mention_id().unwrap_or_else(|| vec![]);
+                let id = self.scan_image_mention_id().unwrap_or_default();
 
                 let end_column = self.pos + 1 + id.len();
                 self.pos += 1 + id.len();
