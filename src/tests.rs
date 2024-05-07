@@ -130,7 +130,12 @@ where
     let root = parse_document(&arena, input, &options);
     let mut output = vec![];
     html::format_document(root, &options, &mut output).unwrap();
-    compare_strs(&String::from_utf8(output).unwrap(), expected, "regular", input);
+    compare_strs(
+        &String::from_utf8(output).unwrap(),
+        expected,
+        "regular",
+        input,
+    );
 }
 
 macro_rules! html_opts {

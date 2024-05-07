@@ -275,10 +275,12 @@ impl<'o> XmlFormatter<'o> {
                     write!(self.output, "</{}", ast.value.xml_node_name())?;
                     was_literal = true;
                 }
-                NodeValue::SpoileredText => if entering {
-                    self.output.write_all(b"<spoiler>")?;
-                } else {
-                    self.output.write_all(b"</spoiler>")?;
+                NodeValue::SpoileredText => {
+                    if entering {
+                        self.output.write_all(b"<spoiler>")?;
+                    } else {
+                        self.output.write_all(b"</spoiler>")?;
+                    }
                 }
                 NodeValue::ImageMention(ref data) => {
                     self.output.write_all(data.as_bytes())?;

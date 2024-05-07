@@ -107,7 +107,7 @@ fn separate_quotes_on_line_end() {
 fn unnest_quotes_on_line_end() {
     html(
         "> 1\n> > 2\n> 1",
-        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n",
     );
 }
 
@@ -115,7 +115,7 @@ fn unnest_quotes_on_line_end() {
 fn unnest_quotes_on_line_end_commonmark() {
     html(
         "> 1\n> > 2\n> \n> 1",
-        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n"
+        "<blockquote>\n<p>1</p>\n<blockquote>\n<p>2</p>\n</blockquote>\n<p>1</p>\n</blockquote>\n",
     );
 }
 
@@ -139,7 +139,7 @@ fn image_mention() {
 
             opts.extension.philomena = true;
             opts.extension.philomena_replacements = Some(replacements);
-        }
+        },
     );
 }
 
