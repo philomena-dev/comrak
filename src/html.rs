@@ -6,6 +6,7 @@ use crate::nodes::{
 };
 use crate::parser::{Options, Plugins};
 use crate::scanners;
+use http::Uri;
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::borrow::Cow;
@@ -13,7 +14,6 @@ use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Write};
 use std::str;
-use http::Uri;
 
 use crate::adapters::HeadingMeta;
 
@@ -1114,13 +1114,17 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</a>")?;
                 }
             }
-            NodeValue::SpoileredText => if entering {
-                self.output.write_all(b"<span class=\"spoiler\">")?;
-            } else {
-                self.output.write_all(b"</span>")?;
+            NodeValue::SpoileredText => {
+                if entering {
+                    self.output.write_all(b"<span class=\"spoiler\">")?;
+                } else {
+                    self.output.write_all(b"</span>")?;
+                }
             }
-            NodeValue::ImageMention(ref data) => if entering {
-                self.output.write_all(data.as_bytes())?;
+            NodeValue::ImageMention(ref data) => {
+                if entering {
+                    self.output.write_all(data.as_bytes())?;
+                }
             }
             NodeValue::EscapedTag(ref net) => {
                 self.output.write_all(net.as_bytes())?;

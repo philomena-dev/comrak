@@ -295,9 +295,9 @@ pub struct ExtensionOptions {
     ///
     /// assert_eq!(markdown_to_html("[test](https://example.com/path) [test](http://www.example.com/path)", &options),
     ///            "<div class=\"paragraph\"><a href=\"/path\">test</a> <a href=\"/path\">test</a></div>\n");
-    /// 
+    ///
     /// options.extension.autolink = true;
-    /// 
+    ///
     /// assert_eq!(markdown_to_html("https://example.com/path http://www.example.com/path", &options),
     ///            "<div class=\"paragraph\"><a href=\"/path\">https://example.com/path</a> <a href=\"/path\">http://www.example.com/path</a></div>\n");
     /// ```
@@ -1291,7 +1291,11 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
             } else if !indented
                 && node_matches!(container, NodeValue::Paragraph)
                 && unwrap_into(
-                    if self.options.extension.philomena { None } else { scanners::setext_heading_line(&line[self.first_nonspace..]) },
+                    if self.options.extension.philomena {
+                        None
+                    } else {
+                        scanners::setext_heading_line(&line[self.first_nonspace..])
+                    },
                     &mut sc,
                 )
             {
@@ -1764,7 +1768,10 @@ impl<'a, 'o, 'c> Parser<'a, 'o, 'c> {
         if !self.current.same_node(last_matched_container)
             && container.same_node(last_matched_container)
             && !self.blank
-            && !matches!(container.data.borrow().value, NodeValue::BlockQuote | NodeValue::Document)
+            && !matches!(
+                container.data.borrow().value,
+                NodeValue::BlockQuote | NodeValue::Document
+            )
             && node_matches!(self.current, NodeValue::Paragraph)
         {
             self.add_line(self.current, line);
