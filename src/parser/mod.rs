@@ -42,7 +42,7 @@ const CODE_INDENT: usize = 4;
 const MAX_LIST_DEPTH: usize = 100;
 
 macro_rules! node_matches {
-    ($node:expr, $( $pat:pat )|+) => {{
+    ($node:expr, $( $pat:pat_param )|+) => {{
         matches!(
             $node.data.borrow().value,
             $( $pat )|+
