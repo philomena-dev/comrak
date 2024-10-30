@@ -164,6 +164,7 @@ impl<'a, 'o, 'c> TypstFormatter<'a, 'o, 'c> {
             NodeValue::Math(math) => self.render_math(&math),
             NodeValue::WikiLink(link) => self.render_wikilink(node, &link),
             NodeValue::EscapedTag(tag) => escape_text(tag),
+            NodeValue::ImageMention(ref content) => self.render_image_mention(content),
             NodeValue::BlockQuote
             | NodeValue::MultilineBlockQuote(_)
             | NodeValue::List(_)
@@ -506,6 +507,10 @@ impl<'a, 'o, 'c> TypstFormatter<'a, 'o, 'c> {
         }
     }
 
+    fn render_image_mention(&self, content: &str) -> String {
+        format!("{}{}", escape_text(">>"), escape_text(content))
+    }
+
     fn render_wikilink(&mut self, node: Node<'a>, link: &NodeWikiLink) -> String {
         let url = escape_string(&link.url);
         let label = self.render_inline_children(node);
@@ -674,6 +679,7 @@ fn plain_text(node: Node<'_>) -> String {
         NodeValue::Math(NodeMath { literal, .. }) => literal,
         NodeValue::FootnoteReference(reference) => format!("[^{}]", reference.name),
         NodeValue::EscapedTag(tag) => tag.to_string(),
+        NodeValue::ImageMention(content) => content,
         NodeValue::TaskItem(_) => node.children().map(plain_text).collect(),
         NodeValue::Table(_) | NodeValue::TableRow(_) | NodeValue::TableCell => {
             node.children().map(plain_text).collect()
