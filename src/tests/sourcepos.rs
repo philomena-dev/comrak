@@ -561,6 +561,13 @@ const MATH_BLOCK: TestCase = (&[sourcepos!((1:1-3:2))], "$$\na\n$$\n");
 const CALLOUT: TestCase = (&[sourcepos!((1:1-2:6))], "> [!note]\n> Body\n");
 const CALLOUT_TITLE: TestCase = (&[sourcepos!((1:11-1:15))], "> [!note] Title\n> Body\n");
 
+const IMAGE_MENTION: TestCase = (
+    &[sourcepos!((2:1-2:7))],
+    r#"before
+>>1234p
+after"#,
+);
+
 fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
     use NodeValueDiscriminants::*;
 
@@ -627,6 +634,7 @@ fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
                 BlockId => BLOCK_ID,
                 CommentInline => COMMENT_INLINE,
                 MultilineComment => MULTILINE_COMMENT,
+                ImageMention => IMAGE_MENTION,
                 Raw => unreachable!(),
                 #[cfg(feature = "phoenix_heex")]
                 HeexBlock => HEEX_BLOCK,
@@ -677,6 +685,11 @@ fn sourcepos() {
     {
         options.extension.grid_table = true;
     }
+
+    let mut replacements = HashMap::new();
+    replacements.insert("1234p".to_string(), "1234p".to_string());
+    options.extension.greentext = true;
+    options.extension.replacements = Some(replacements);
 
     for (kind, (expecteds, text)) in node_values {
         // Only enable ofm_callouts for Callout/CalloutTitle kinds so that
