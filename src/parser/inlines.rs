@@ -285,6 +285,9 @@ impl<'a, 'r, 'o, 'd, 'i, 'c> Subject<'a, 'r, 'o, 'd, 'i, 'c> {
         if options.extension.spoiler {
             s.special_chars[b'|' as usize] = true;
         }
+        if options.extension.replacements.is_some() {
+            s.special_chars[b'>' as usize] = true;
+        }
         for &c in b"\"'.-" {
             s.smart_chars[c as usize] = true;
         }
@@ -407,6 +410,22 @@ impl<'a, 'r, 'o, 'd, 'i, 'c> Subject<'a, 'r, 'o, 'd, 'i, 'c> {
             }
             '$' => Some(self.handle_dollars(&node_ast.line_offsets)),
             '|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
+            '>' if self.options.extension.replacements.is_some()
+                && self.peek_char_n(1) == Some(&(b'>')) =>
+            {
+                let start_column = self.pos;
+                self.pos += 2;
+
+                let id_len = self.scan_image_mention_id();
+
+                let end_column = self.pos + id_len;
+                let id = &self.input[self.pos..end_column];
+
+                self.pos += id_len;
+
+                let value = self.handle_image_mention(id);
+                Some(self.make_inline(value, start_column, end_column))
+            }
             _ => {
                 let mut endpos = self.find_special_char();
                 let mut contents = self.input[self.pos..endpos].to_vec();
@@ -708,7 +727,12 @@ impl<'a, 'r, 'o, 'd, 'i, 'c> Subject<'a, 'r, 'o, 'd, 'i, 'c> {
     fn find_special_char(&self) -> usize {
         for n in self.pos..self.input.len() {
             if self.special_chars[self.input[n] as usize] {
-                if self.input[n] == b'^' && self.within_brackets {
+                if self.input[n] == b'>' {
+                    let new_idx = n + 1;
+                    if new_idx < self.input.len() && self.input[new_idx] == b'>' {
+                        return n;
+                    }
+                } else if self.input[n] == b'^' && self.within_brackets {
                     // NO OP
                 } else {
                     return n;
@@ -2050,6 +2074,26 @@ impl<'a, 'r, 'o, 'd, 'i, 'c> Subject<'a, 'r, 'o, 'd, 'i, 'c> {
         }
 
         true
+    }
+
+    fn scan_image_mention_id(&self) -> usize {
+        let input = &self.input[self.pos..];
+        let len = input.len();
+        let mut i = 0;
+
+        while i < len {
+            match input[i] {
+                b'0'..=b'9' | b't' | b's' | b'p' => i += 1,
+                _ => break,
+            }
+        }
+
+        i
+    }
+
+    fn handle_image_mention(&self, id: &[u8]) -> NodeValue {
+        let id_str = str::from_utf8(id).unwrap_or("");
+        NodeValue::ImageMention(id_str.to_owned())
     }
 
     // Given a label, handles backslash escaped characters. Appends the resulting
