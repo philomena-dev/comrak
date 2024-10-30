@@ -33,6 +33,7 @@ mod multiline_block_quotes;
 #[path = "tests/options.rs"]
 mod options_;
 mod pathological;
+mod philomena;
 mod phoenix_heex;
 mod plugins;
 mod raw;
