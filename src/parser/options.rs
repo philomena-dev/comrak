@@ -722,6 +722,26 @@ pub struct Extension<'c> {
     #[cfg(feature = "attributes")]
     #[cfg_attr(feature = "bon", builder(default))]
     pub link_attributes: bool,
+
+    /// Enables the Philomena replacements Comrak extension.
+    ///
+    /// Note that the greentext extension may also be required to match
+    /// replacements at the beginning of lines.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// let mut replacements = std::collections::HashMap::new();
+    ///
+    /// replacements.insert("1234p".to_string(), "<div id=\"1234\">p</div>".to_string());
+    ///
+    /// options.extension.greentext = true;
+    /// options.extension.replacements = Some(replacements);
+    ///
+    /// assert_eq!(markdown_to_html(">>1234p", &options),
+    ///            "<p><div id=\"1234\">p</div></p>\n");
+    /// ```
+    pub replacements: Option<HashMap<String, String>>,
 }
 
 impl Extension<'_> {
