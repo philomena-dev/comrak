@@ -28,6 +28,7 @@ mod pathological;
 mod plugins;
 mod raw;
 mod regressions;
+mod replacements;
 mod rewriter;
 mod shortcodes;
 #[path = "tests/sourcepos.rs"]
