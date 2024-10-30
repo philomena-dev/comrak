@@ -742,6 +742,9 @@ fn render_image<'a, T>(
         if context.options.render.figure_with_caption {
             context.write_all(b"<figure>")?;
         }
+        if context.options.extension.philomena {
+            context.write_all(b"<span class=\"imgspoiler\">")?;
+        }
         context.write_all(b"<img")?;
         render_sourcepos(context, node)?;
         context.write_all(b" src=\"")?;
@@ -761,6 +764,9 @@ fn render_image<'a, T>(
             context.escape(nl.title.as_bytes())?;
         }
         context.write_all(b"\" />")?;
+        if context.options.extension.philomena {
+            context.write_all(b"</span>")?;
+        }
         if context.options.render.figure_with_caption {
             if !nl.title.is_empty() {
                 context.write_all(b"<figcaption>")?;
@@ -914,9 +920,15 @@ fn render_paragraph<'a, T>(
     if !tight {
         if entering {
             context.cr()?;
-            context.write_all(b"<p")?;
-            render_sourcepos(context, node)?;
-            context.write_all(b">")?;
+            if context.options.extension.philomena {
+                context.write_all(b"<div class=\"paragraph\"")?;
+                render_sourcepos(context, node)?;
+                context.write_all(b">")?;
+            } else {
+                context.write_all(b"<p")?;
+                render_sourcepos(context, node)?;
+                context.write_all(b">")?;
+            }
         } else {
             if let Some(NodeValue::FootnoteDefinition(nfd)) =
                 &node.parent().map(|n| n.data.borrow().value.clone())
@@ -926,7 +938,11 @@ fn render_paragraph<'a, T>(
                     put_footnote_backref(context, nfd)?;
                 }
             }
-            context.write_all(b"</p>\n")?;
+            if context.options.extension.philomena {
+                context.write_all(b"</div>\n")?;
+            } else {
+                context.write_all(b"</p>\n")?;
+            }
         }
     }
 
