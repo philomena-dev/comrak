@@ -76,7 +76,8 @@ fn exercise_full_api() {
         .subscript(true)
         .spoiler(true)
         .greentext(true)
-        .alerts(true);
+        .alerts(true)
+        .replacements(HashMap::new());
 
     let parse = ParseOptions::builder()
         .smart(false)
@@ -277,6 +278,9 @@ fn exercise_full_api() {
         nodes::NodeValue::Underline => {}
         nodes::NodeValue::Subscript => {}
         nodes::NodeValue::SpoileredText => {}
+        nodes::NodeValue::ImageMention(data) => {
+            let _: &String = data;
+        }
         nodes::NodeValue::EscapedTag(data) => {
             let _: &String = data;
         }

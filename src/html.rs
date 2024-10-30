@@ -448,6 +448,7 @@ pub fn format_node_default<'a, T>(
         #[cfg(feature = "shortcodes")]
         NodeValue::ShortCode(_) => render_short_code(context, node, entering),
         NodeValue::SpoileredText => render_spoiler_text(context, node, entering),
+        NodeValue::ImageMention(ref data) => render_image_mention(context, node, entering, data),
         NodeValue::Subscript => render_subscript(context, node, entering),
         NodeValue::Superscript => render_superscript(context, node, entering),
         NodeValue::Underline => render_underline(context, node, entering),
@@ -1506,6 +1507,31 @@ fn render_spoiler_text<'a, T>(
         context.write_all(b" class=\"spoiler\">")?;
     } else {
         context.write_all(b"</span>")?;
+    }
+
+    Ok(ChildRendering::HTML)
+}
+
+fn render_image_mention<'a, T>(
+    context: &mut Context<T>,
+    _node: &'a AstNode<'a>,
+    entering: bool,
+    data: &str,
+) -> io::Result<ChildRendering> {
+    // Nowhere to put sourcepos.
+    if entering {
+        if let Some(replacements) = &context.options.extension.replacements {
+            // TODO: let chains
+            if let Some(html) = replacements.get(data) {
+                context.write_all(html.as_bytes())?;
+            } else {
+                context.escape(b">>")?;
+                context.escape(data.as_bytes())?;
+            }
+        } else {
+            context.escape(b">>")?;
+            context.escape(data.as_bytes())?;
+        }
     }
 
     Ok(ChildRendering::HTML)
