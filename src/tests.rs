@@ -48,6 +48,7 @@ mod plugins;
 mod raw;
 mod reference_limit;
 mod regressions;
+mod replacements;
 mod rewriter;
 mod shortcodes;
 #[path = "tests/sourcepos.rs"]
