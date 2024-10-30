@@ -258,6 +258,10 @@ pub enum NodeValue {
     /// **Inline**.  Spoilered text.  Enabled with `spoiler` option.
     SpoileredText,
 
+    /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is
+    /// the referent image markup.
+    ImageMention(String),
+
     /// **Inline**. Text surrounded by escaped markup. Enabled with `spoiler` option.
     /// The `&'static str` is the tag to be escaped.
     EscapedTag(&'static str),
@@ -1311,6 +1315,7 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::Subscript => "subscript",
             NodeValue::SpoileredText => "spoiler",
+            NodeValue::ImageMention(_) => "image_mention",
             NodeValue::EscapedTag(_) => "escaped_tag",
             NodeValue::BlockId(..) => "block_id",
             NodeValue::CommentInline(_) | NodeValue::MultilineComment(_) => "comment",
@@ -1678,6 +1683,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                     | NodeValue::EscapedTag(_)
                     | NodeValue::CommentInline(_)
                     | NodeValue::BlockId(_)
+                    | NodeValue::ImageMention(_)
                 )
             }
             NodeValue::MultilineBlockQuote(_) => {
@@ -1718,6 +1724,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
             | NodeValue::Math(_)
             | NodeValue::MathBlock(_)
             | NodeValue::BlockId(_) => false,
+            | NodeValue::ImageMention(_) => false,
 
             #[cfg(feature = "phoenix_heex")]
             NodeValue::HeexBlock(_) | NodeValue::HeexInline(_) => false,
