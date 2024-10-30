@@ -27,6 +27,7 @@ mod multiline_block_quotes;
 #[path = "tests/options.rs"]
 mod options_;
 mod pathological;
+mod philomena;
 mod plugins;
 mod raw;
 mod regressions;

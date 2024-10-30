@@ -720,6 +720,9 @@ fn render_image<'a, T>(
         if context.options.render.figure_with_caption {
             context.write_str("<figure>")?;
         }
+        if context.options.extension.philomena {
+            context.write_str("<span class=\"imgspoiler\">")?;
+        }
         context.write_str("<img")?;
         render_sourcepos(context, node)?;
         context.write_str(" src=\"")?;
@@ -739,6 +742,9 @@ fn render_image<'a, T>(
             context.escape(&nl.title)?;
         }
         context.write_str("\" />")?;
+        if context.options.extension.philomena {
+            context.write_str("</span>")?;
+        }
         if context.options.render.figure_with_caption {
             if !nl.title.is_empty() {
                 context.write_str("<figcaption>")?;
@@ -878,9 +884,15 @@ fn render_paragraph<'a, T>(
     if !tight {
         if entering {
             context.cr()?;
-            context.write_str("<p")?;
-            render_sourcepos(context, node)?;
-            context.write_str(">")?;
+            if context.options.extension.philomena {
+                context.write_str("<div class=\"paragraph\"")?;
+                render_sourcepos(context, node)?;
+                context.write_str(">")?;
+            } else {
+                context.write_str("<p")?;
+                render_sourcepos(context, node)?;
+                context.write_str(">")?;
+            }
         } else {
             if let Some(parent) = node.parent() {
                 if let NodeValue::FootnoteDefinition(ref nfd) = parent.data().value {
@@ -890,7 +902,11 @@ fn render_paragraph<'a, T>(
                     }
                 }
             }
-            context.write_str("</p>\n")?;
+            if context.options.extension.philomena {
+                context.write_str("</div>\n")?;
+            } else {
+                context.write_str("</p>\n")?;
+            }
         }
     }
 
