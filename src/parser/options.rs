@@ -715,9 +715,22 @@ pub struct Extension<'c> {
     ///   }
     /// }
     /// ```
+
     #[cfg(feature = "attributes")]
     #[cfg_attr(feature = "bon", builder(default))]
     pub link_attributes: bool,
+    /// Enables the Philomena Comrak extension.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// options.extension.philomena = true;
+    ///
+    /// assert_eq!(markdown_to_html("hello world", &options),
+    ///            "<div class=\"paragraph\">hello world</div>\n");
+    /// ```
+    #[cfg_attr(feature = "bon", builder(default))]
+    pub philomena: bool,
 
     /// Enables the Philomena replacements Comrak extension.
     ///
