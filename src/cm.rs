@@ -418,6 +418,7 @@ impl<'a, 'o, 'c> CommonMarkFormatter<'a, 'o, 'c> {
             NodeValue::Underline => self.format_underline()?,
             NodeValue::Subscript => self.format_subscript()?,
             NodeValue::SpoileredText => self.format_spoiler()?,
+            NodeValue::ImageMention(ref id_str) => self.format_image_mention(id_str, entering)?,
             NodeValue::EscapedTag(ref net) => self.format_escaped_tag(net)?,
             NodeValue::Alert(ref alert) => self.format_alert(alert, entering)?,
         };
@@ -801,6 +802,13 @@ impl<'a, 'o, 'c> CommonMarkFormatter<'a, 'o, 'c> {
 
     fn format_escaped_tag(&mut self, net: &str) -> fmt::Result {
         self.output(net, false, Escaping::Literal)
+    }
+
+    fn format_image_mention(&mut self, id_str: &str, entering: bool) -> fmt::Result {
+        if entering {
+            write!(self, ">>{}", id_str).unwrap();
+        }
+        Ok(())
     }
 
     fn format_link(

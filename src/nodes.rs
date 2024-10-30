@@ -218,6 +218,10 @@ pub enum NodeValue {
     /// **Inline**.  Spoilered text.  Enabled with `spoiler` option.
     SpoileredText,
 
+    /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is
+    /// the referent image markup.
+    ImageMention(String),
+
     /// **Inline**. Text surrounded by escaped markup. Enabled with `spoiler` option.
     /// The `String` is the tag to be escaped.
     EscapedTag(String),
@@ -642,6 +646,7 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::Subscript => "subscript",
             NodeValue::SpoileredText => "spoiler",
+            NodeValue::ImageMention(_) => "image_mention",
             NodeValue::EscapedTag(_) => "escaped_tag",
             NodeValue::Alert(_) => "alert",
         }
@@ -917,6 +922,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                     | NodeValue::Underline
                     | NodeValue::Subscript
                     | NodeValue::TaskItem(_)
+                    | NodeValue::ImageMention(..)
             ),
 
             #[cfg(feature = "shortcodes")]
@@ -939,6 +945,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                 | NodeValue::Subscript
                 | NodeValue::ShortCode(..)
                 | NodeValue::TaskItem(_)
+                | NodeValue::ImageMention(..)
             ),
 
             NodeValue::MultilineBlockQuote(_) => {

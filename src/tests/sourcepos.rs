@@ -420,6 +420,8 @@ fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
         .filter(|v| {
             !matches!(
                 v,
+                // Remove unreliable variants.
+                ImageMention |
                 // Remove buggy variants.
                 List // end is 3:0
                     | Item // end is 3:0
@@ -474,6 +476,7 @@ fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
                 SpoileredText => SPOILERED_TEXT,
                 EscapedTag => ESCAPED_TAG,
                 Alert => ALERT,
+                ImageMention => unreachable!(),
                 Raw => unreachable!(),
             };
             Some((*v, text))
