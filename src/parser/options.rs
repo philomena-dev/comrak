@@ -628,6 +628,19 @@ pub struct Extension<'c> {
     #[cfg_attr(feature = "bon", builder(default))]
     pub block_directive: bool,
 
+    /// Enables the Philomena Comrak extension.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// options.extension.philomena = true;
+    ///
+    /// assert_eq!(markdown_to_html("hello world", &options),
+    ///            "<div class=\"paragraph\">hello world</div>\n");
+    /// ```
+    #[cfg_attr(feature = "bon", builder(default))]
+    pub philomena: bool,
+
     /// Enables the Philomena replacements Comrak extension.
     ///
     /// Note that the greentext extension may also be required to match
