@@ -195,6 +195,10 @@ pub enum NodeValue {
     /// **Inline**.  Spoilered text.  Enabled with `spoiler` option.
     SpoileredText,
 
+    /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is
+    /// the referent image markup.
+    ImageMention(String),
+
     /// **Inline**. Text surrounded by escaped markup. Enabled with `spoiler` option.
     /// The `String` is the tag to be escaped.
     EscapedTag(String),
@@ -519,6 +523,7 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::Subscript => "subscript",
             NodeValue::SpoileredText => "spoiler",
+            NodeValue::ImageMention(_) => "image_mention",
             NodeValue::EscapedTag(_) => "escaped_tag",
         }
     }
@@ -797,6 +802,7 @@ pub fn can_contain_type<'a>(node: &'a AstNode<'a>, child: &NodeValue) -> bool {
                 | NodeValue::SpoileredText
                 | NodeValue::Underline
                 | NodeValue::Subscript
+                | NodeValue::ImageMention(..)
         ),
 
         #[cfg(feature = "shortcodes")]
@@ -817,6 +823,7 @@ pub fn can_contain_type<'a>(node: &'a AstNode<'a>, child: &NodeValue) -> bool {
             | NodeValue::SpoileredText
             | NodeValue::Underline
             | NodeValue::Subscript
+            | NodeValue::ImageMention(..)
             | NodeValue::ShortCode(..)
         ),
 

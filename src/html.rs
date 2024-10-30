@@ -1163,6 +1163,23 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</span>")?;
                 }
             }
+            NodeValue::ImageMention(ref data) => {
+                // Nowhere to put sourcepos.
+                if entering {
+                    if let Some(replacements) = &self.options.extension.replacements {
+                        // TODO: let chains
+                        if let Some(html) = replacements.get(data) {
+                            self.output.write_all(html.as_bytes())?;
+                        } else {
+                            self.escape(b">>")?;
+                            self.escape(data.as_bytes())?;
+                        }
+                    } else {
+                        self.escape(b">>")?;
+                        self.escape(data.as_bytes())?;
+                    }
+                }
+            }
             NodeValue::EscapedTag(ref net) => {
                 // Nowhere to put sourcepos.
                 self.output.write_all(net.as_bytes())?;

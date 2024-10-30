@@ -287,6 +287,10 @@ impl<'o> XmlFormatter<'o> {
                 NodeValue::Underline => {}
                 NodeValue::Subscript => {}
                 NodeValue::SpoileredText => {}
+                NodeValue::ImageMention(ref data) => {
+                    self.escape(b">>")?;
+                    self.escape(data.as_bytes())?;
+                }
                 NodeValue::EscapedTag(ref data) => {
                     self.output.write_all(data.as_bytes())?;
                 }
