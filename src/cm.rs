@@ -399,6 +399,7 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
             NodeValue::Subscript => self.format_subscript(),
             NodeValue::Underline => self.format_underline(),
             NodeValue::SpoileredText => self.format_spoiler(),
+            NodeValue::ImageMention(ref nl) => self.format_image_mention(nl),
             NodeValue::EscapedTag(ref net) => self.format_escaped_tag(net),
         };
         true
@@ -722,6 +723,10 @@ impl<'a, 'o> CommonMarkFormatter<'a, 'o> {
 
     fn format_spoiler(&mut self) {
         write!(self, "||").unwrap();
+    }
+
+    fn format_image_mention(&mut self, nl: &str) {
+        write!(self, ">>{}", nl).unwrap();
     }
 
     fn format_escaped_tag(&mut self, net: &String) {

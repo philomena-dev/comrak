@@ -1163,6 +1163,12 @@ impl<'o> HtmlFormatter<'o> {
                     self.output.write_all(b"</span>")?;
                 }
             }
+            NodeValue::ImageMention(ref data) => {
+                if entering {
+                    // Nowhere to put sourcepos.
+                    self.output.write_all(data.as_bytes())?;
+                }
+            }
             NodeValue::EscapedTag(ref net) => {
                 // Nowhere to put sourcepos.
                 self.output.write_all(net.as_bytes())?;
