@@ -39,6 +39,7 @@ mod ofm_comments;
 #[path = "tests/options.rs"]
 mod options_;
 mod pathological;
+mod philomena;
 mod phoenix_heex;
 mod plugins;
 mod raw;
