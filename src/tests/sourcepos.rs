@@ -468,6 +468,13 @@ hello world
 after"#,
 );
 
+const IMAGE_MENTION: TestCase = (
+    &[sourcepos!((2:1-2:7))],
+    r#"before
+>>1234p
+after"#,
+);
+
 fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
     use NodeValueDiscriminants::*;
 
@@ -522,6 +529,7 @@ fn node_values() -> HashMap<NodeValueDiscriminants, TestCase> {
                 Alert => ALERT,
                 Subtext => SUBTEXT,
                 BlockDirective => BLOCK_DIRECTIVE,
+                ImageMention => IMAGE_MENTION,
                 Raw => unreachable!(),
                 #[cfg(feature = "phoenix_heex")]
                 HeexBlock => HEEX_BLOCK,
@@ -567,6 +575,11 @@ fn sourcepos() {
     {
         options.extension.phoenix_heex = true;
     }
+
+    let mut replacements = HashMap::new();
+    replacements.insert("1234p".to_string(), "1234p".to_string());
+    options.extension.greentext = true;
+    options.extension.replacements = Some(replacements);
 
     for (kind, (expecteds, text)) in node_values {
         let arena = Arena::new();
