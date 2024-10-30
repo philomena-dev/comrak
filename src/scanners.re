@@ -237,6 +237,15 @@ pub fn footnote_definition(s: &str) -> Option<usize> {
 */
 }
 
+pub fn image_mention(s: &str) -> Option<usize> {
+    let mut cursor = 0;
+    let len = s.len();
+/*!re2c
+    [0-9]+ [tsp]? { return Some(cursor); }
+    * { return None; }
+*/
+}
+
 pub fn scheme(s: &str) -> Option<usize> {
     let mut cursor = 0;
     let mut marker = 0;
