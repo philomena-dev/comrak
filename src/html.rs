@@ -713,9 +713,13 @@ impl<'o> HtmlFormatter<'o> {
                 if !tight {
                     if entering {
                         self.cr()?;
-                        self.output.write_all(b"<p")?;
-                        self.render_sourcepos(node)?;
-                        self.output.write_all(b">")?;
+                        if self.options.extension.philomena {
+                            self.output.write_all(b"<div class=\"paragraph\">")?;
+                        } else {
+                            self.output.write_all(b"<p")?;
+                            self.render_sourcepos(node)?;
+                            self.output.write_all(b">")?;
+                        }
                     } else {
                         if let NodeValue::FootnoteDefinition(nfd) =
                             &node.parent().unwrap().data.borrow().value
@@ -725,7 +729,11 @@ impl<'o> HtmlFormatter<'o> {
                                 self.put_footnote_backref(nfd)?;
                             }
                         }
-                        self.output.write_all(b"</p>\n")?;
+                        if self.options.extension.philomena {
+                            self.output.write_all(b"</div>\n")?;
+                        } else {
+                            self.output.write_all(b"</p>\n")?;
+                        }
                     }
                 }
             }
@@ -882,6 +890,9 @@ impl<'o> HtmlFormatter<'o> {
                     if self.options.render.figure_with_caption {
                         self.output.write_all(b"<figure>")?;
                     }
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"<span class=\"imgspoiler\">")?;
+                    }
                     self.output.write_all(b"<img")?;
                     if self.options.render.experimental_inline_sourcepos {
                         self.render_sourcepos(node)?;
@@ -903,6 +914,9 @@ impl<'o> HtmlFormatter<'o> {
                         self.escape(nl.title.as_bytes())?;
                     }
                     self.output.write_all(b"\" />")?;
+                    if self.options.extension.philomena {
+                        self.output.write_all(b"</span>")?;
+                    }
                     if self.options.render.figure_with_caption {
                         if !nl.title.is_empty() {
                             self.output.write_all(b"<figcaption>")?;

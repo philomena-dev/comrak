@@ -616,6 +616,19 @@ pub struct ExtensionOptions {
     #[cfg_attr(feature = "arbitrary", arbitrary(value = None))]
     pub link_url_rewriter: Option<Arc<dyn URLRewriter>>,
 
+    /// Enables the Philomena Comrak extension.
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, ComrakOptions};
+    /// let mut options = ComrakOptions::default();
+    /// options.extension.philomena = true;
+    ///
+    /// assert_eq!(markdown_to_html("hello world", &options),
+    ///            "<div class=\"paragraph\">hello world</div>\n");
+    /// ```
+    #[builder(default)]
+    pub philomena: bool,
+
     /// Enables the Philomena replacements Comrak extension.
     ///
     /// Note that the greentext extension may also be required to match
