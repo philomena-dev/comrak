@@ -129,6 +129,9 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
             s.special_char_bytes[b'|' as usize] = true;
             s.emph_delim_bytes[b'|' as usize] = true;
         }
+        if options.extension.replacements.is_some() {
+            s.special_char_bytes[b'>' as usize] = true;
+        }
         for &b in b"\"'.-" {
             s.smart_char_bytes[b as usize] = true;
         }
@@ -321,6 +324,21 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
             }
             b'$' => Some(self.handle_dollars(&ast.line_offsets)),
             b'|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
+            b'>' if self.options.extension.replacements.is_some()
+                && self.peek_byte_n(1) == Some(b'>') =>
+            {
+                let start_column = self.scanner.pos;
+                self.scanner.pos += 2;
+
+                let id_len = self.scan_image_mention_id();
+
+                let end_column = self.scanner.pos + id_len;
+                let id = &self.input[self.scanner.pos..end_column];
+
+                self.scanner.pos += id_len;
+
+                Some(self.make_inline(self.handle_image_mention(id), start_column, end_column - 1))
+            }
             _ => {
                 let mut endpos = self.find_special_char();
                 let startpos = self.scanner.pos;
@@ -893,6 +911,20 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
         }
 
         true
+    }
+
+    fn scan_image_mention_id(&self) -> usize {
+        let mut i = 0;
+
+        while let Some(b'0'..=b'9' | b't' | b's' | b'p') = self.peek_byte_n(i) {
+            i += 1
+        }
+
+        i
+    }
+
+    fn handle_image_mention(&self, id: &str) -> NodeValue {
+        NodeValue::ImageMention(id.to_string())
     }
 
     // Given a label, handles backslash escaped characters. Appends the resulting
@@ -1910,7 +1942,12 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
     fn find_special_char(&self) -> usize {
         for n in self.scanner.pos..self.input.len() {
             if self.special_char_bytes[self.input.as_bytes()[n] as usize] {
-                if self.input.as_bytes()[n] == b'^' && self.within_brackets {
+                if self.input.as_bytes()[n] == b'>' {
+                    let new_idx = n + 1;
+                    if new_idx < self.input.len() && self.input.as_bytes()[new_idx] == b'>' {
+                        return n;
+                    }
+                } else if self.input.as_bytes()[n] == b'^' && self.within_brackets {
                     // NO OP
                 } else {
                     return n;

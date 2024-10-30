@@ -295,6 +295,10 @@ impl<'o, 'c> XmlFormatter<'o, 'c> {
                 NodeValue::Underline => {}
                 NodeValue::Subscript => {}
                 NodeValue::SpoileredText => {}
+                NodeValue::ImageMention(ref data) => {
+                    self.escape(">>")?;
+                    self.escape(data)?;
+                }
                 NodeValue::EscapedTag(ref data) => {
                     self.output.write_str(data)?;
                 }

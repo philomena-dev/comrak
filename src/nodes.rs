@@ -226,6 +226,10 @@ pub enum NodeValue {
     /// **Inline**.  Spoilered text.  Enabled with `spoiler` option.
     SpoileredText,
 
+    /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is
+    /// the referent image markup.
+    ImageMention(String),
+
     /// **Inline**. Text surrounded by escaped markup. Enabled with `spoiler` option.
     /// The `String` is the tag to be escaped.
     EscapedTag(String),
@@ -666,6 +670,7 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::Subscript => "subscript",
             NodeValue::SpoileredText => "spoiler",
+            NodeValue::ImageMention(_) => "image_mention",
             NodeValue::EscapedTag(_) => "escaped_tag",
             NodeValue::Alert(_) => "alert",
             NodeValue::Subtext => "subtext",
@@ -967,6 +972,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                     | NodeValue::TaskItem(_)
                     | NodeValue::Escaped
                     | NodeValue::EscapedTag(_)
+                    | NodeValue::ImageMention(..)
             ),
             #[cfg(feature = "shortcodes")]
             NodeValue::TableCell => matches!(
@@ -991,6 +997,7 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                 | NodeValue::TaskItem(_)
                 | NodeValue::Escaped
                 | NodeValue::EscapedTag(_)
+                | NodeValue::ImageMention(..)
             ),
             NodeValue::MultilineBlockQuote(_) => {
                 child.block() && !matches!(*child, NodeValue::Item(..) | NodeValue::TaskItem(..))
@@ -1012,7 +1019,8 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
             | NodeValue::HtmlInline(_)
             | NodeValue::Raw(_)
             | NodeValue::FootnoteReference(_)
-            | NodeValue::Math(_) => false,
+            | NodeValue::Math(_)
+            | NodeValue::ImageMention(..) => false,
         }
     }
 
