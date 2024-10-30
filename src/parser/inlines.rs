@@ -107,6 +107,9 @@ impl ByteTables {
         for &b in b"*_" {
             t.emph[b as usize] = true;
         }
+        if options.extension.replacements.is_some() {
+            t.special[b'>' as usize] = true;
+        }
         t
     }
 }
@@ -393,6 +396,11 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
                 }
             }
             b'$' => Some(self.handle_dollars(line_offsets)),
+            b'>' if self.options.extension.replacements.is_some()
+                && self.peek_byte_n(1) == Some(b'>') =>
+            {
+                Some(self.handle_image_mention())
+            }
             b'>' if self.options.parse.smart => Some(self.handle_guillemet_close()),
             b'|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
             b'%' if self.options.extension.ofm_comments => Some(self.handle_ofm_comment()),
@@ -1141,6 +1149,22 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
         }
 
         true
+    }
+
+    fn handle_image_mention(&mut self) -> Node<'a> {
+        // Advance past initial >> detected as special char
+        self.scanner.pos += 2;
+
+        let matchlen = scanners::image_mention(&self.input[self.scanner.pos..]).unwrap_or(0);
+        self.scanner.pos += matchlen;
+
+        self.make_inline(
+            NodeValue::ImageMention(
+                self.input[self.scanner.pos - matchlen..self.scanner.pos].into(),
+            ),
+            self.scanner.pos - 2 - matchlen,
+            self.scanner.pos - 1,
+        )
     }
 
     // Given a label, handles backslash escaped characters. Appends the resulting
