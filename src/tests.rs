@@ -24,6 +24,7 @@ mod math;
 mod multiline_block_quotes;
 mod options;
 mod pathological;
+mod philomena;
 mod plugins;
 mod raw;
 mod regressions;
