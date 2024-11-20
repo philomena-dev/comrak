@@ -535,6 +535,24 @@ pub struct ExtensionOptions {
     #[builder(default)]
     pub subscript: bool,
 
+    /// Enables subscript text using single percent signs.
+    ///
+    ///
+    /// ```md
+    /// H%2%O
+    /// ```
+    ///
+    /// ```
+    /// # use comrak::{markdown_to_html, Options};
+    /// let mut options = Options::default();
+    /// options.extension.alternate_subscript = true;
+    ///
+    /// assert_eq!(markdown_to_html("H%2%O", &options),
+    ///            "<p>H<sub>2</sub>O</p>\n");
+    /// ```
+    #[builder(default)]
+    pub alternate_subscript: bool,
+
     /// Enables spoilers using double vertical bars
     ///
     /// ```md

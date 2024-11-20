@@ -11,10 +11,11 @@ fn subscript() {
 
 #[test]
 fn subscript_alternate() {
-    html_opts!(
-        [extension.subscript],
+    html_opts_i(
         concat!("H%2%O\n"),
         concat!("<p>H<sub>2</sub>O</p>\n"),
+        false,
+        |opts| opts.extension.alternate_subscript = true,
     );
 }
 

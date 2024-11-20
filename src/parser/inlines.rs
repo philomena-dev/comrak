@@ -153,7 +153,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
             s.special_chars[b'~' as usize] = true;
             s.skip_chars[b'~' as usize] = true;
         }
-        if options.extension.subscript {
+        if options.extension.alternate_subscript {
             s.special_chars[b'%' as usize] = true;
         }
         if options.extension.superscript {
@@ -294,7 +294,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                 Some(self.handle_delim(b'^'))
             }
             '$' => Some(self.handle_dollars()),
-            '%' if self.options.extension.subscript => Some(self.handle_delim(b'%')),
+            '%' if self.options.extension.alternate_subscript => Some(self.handle_delim(b'%')),
             '|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
             '>' if self.options.extension.replacements.is_some()
                 && self.peek_char_n(1) == Some(&(b'>')) =>
@@ -490,7 +490,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                     || ((self.options.extension.strikethrough || self.options.extension.subscript)
                         && c.delim_char == b'~')
                     || (self.options.extension.superscript && c.delim_char == b'^')
-                    || (self.options.extension.subscript && c.delim_char == b'%')
+                    || (self.options.extension.alternate_subscript && c.delim_char == b'%')
                     || (self.options.extension.spoiler && c.delim_char == b'|')
                 {
                     if opener_found {
@@ -1149,7 +1149,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                 }
             } else if self.options.extension.superscript && opener_char == b'^' {
                 NodeValue::Superscript
-            } else if self.options.extension.subscript && opener_char == b'%' {
+            } else if self.options.extension.alternate_subscript && opener_char == b'%' {
                 NodeValue::Subscript
             } else if self.options.extension.spoiler && opener_char == b'|' {
                 if use_delims == 2 {
