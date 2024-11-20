@@ -153,6 +153,9 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
             s.special_chars[b'~' as usize] = true;
             s.skip_chars[b'~' as usize] = true;
         }
+        if options.extension.subscript {
+            s.special_chars[b'%' as usize] = true;
+        }
         if options.extension.superscript {
             s.special_chars[b'^' as usize] = true;
         }
@@ -288,6 +291,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                 Some(self.handle_delim(b'^'))
             }
             '$' => Some(self.handle_dollars()),
+            '%' if self.options.extension.subscript => Some(self.handle_delim(b'%')),
             '|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
             _ => {
                 let endpos = self.find_special_char();
@@ -386,7 +390,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
         // This array is an important optimization that prevents searching down
         // the stack for openers we've previously searched for and know don't
         // exist, preventing exponential blowup on pathological cases.
-        let mut openers_bottom: [usize; 12] = [stack_bottom; 12];
+        let mut openers_bottom: [usize; 13] = [stack_bottom; 13];
 
         // This is traversing the stack from the top to the bottom, setting `closer` to
         // the delimiter directly above `stack_bottom`. In the case where we are processing
@@ -410,13 +414,14 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                 let mut mod_three_rule_invoked = false;
 
                 let ix = match c.delim_char {
-                    b'|' => 0,
-                    b'~' => 1,
-                    b'^' => 2,
-                    b'"' => 3,
-                    b'\'' => 4,
-                    b'_' => 5,
-                    b'*' => 6 + (if c.can_open { 3 } else { 0 }) + (c.length % 3),
+                    b'%' => 0,
+                    b'|' => 1,
+                    b'~' => 2,
+                    b'^' => 3,
+                    b'"' => 4,
+                    b'\'' => 5,
+                    b'_' => 6,
+                    b'*' => 7 + (if c.can_open { 3 } else { 0 }) + (c.length % 3),
                     _ => unreachable!(),
                 };
 
@@ -466,6 +471,7 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                     || ((self.options.extension.strikethrough || self.options.extension.subscript)
                         && c.delim_char == b'~')
                     || (self.options.extension.superscript && c.delim_char == b'^')
+                    || (self.options.extension.subscript && c.delim_char == b'%')
                     || (self.options.extension.spoiler && c.delim_char == b'|')
                 {
                     if opener_found {
@@ -1119,6 +1125,8 @@ impl<'a, 'r, 'o, 'd, 'i> Subject<'a, 'r, 'o, 'd, 'i> {
                 }
             } else if self.options.extension.superscript && opener_char == b'^' {
                 NodeValue::Superscript
+            } else if self.options.extension.subscript && opener_char == b'%' {
+                NodeValue::Subscript
             } else if self.options.extension.spoiler && opener_char == b'|' {
                 if use_delims == 2 {
                     NodeValue::SpoileredText

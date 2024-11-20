@@ -10,6 +10,15 @@ fn subscript() {
 }
 
 #[test]
+fn subscript_alternate() {
+    html_opts!(
+        [extension.subscript],
+        concat!("H%2%O\n"),
+        concat!("<p>H<sub>2</sub>O</p>\n"),
+    );
+}
+
+#[test]
 fn strikethrough_and_subscript() {
     html_opts!(
         [extension.subscript, extension.strikethrough],
