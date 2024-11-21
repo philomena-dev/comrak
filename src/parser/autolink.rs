@@ -351,7 +351,7 @@ fn valid_domain(host: &str, allow_short: bool) -> bool {
 fn domain_delim_ok(input: &str, start: usize, allow_short: bool, relaxed_autolinks: bool) -> bool {
     let host = host(&input[start..]);
     let valid = valid_domain(host, allow_short);
-    let stripped = host.trim_end_matches(['.', '_']);
+    let stripped = host.trim_end_matches('.');
     if stripped.len() == host.len() {
         return valid;
     }
@@ -416,7 +416,7 @@ fn is_valid_hostchar(ch: char) -> bool {
     !(ch.is_whitespace() || ch.is_punctuation() || ch.is_symbol())
 }
 
-const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*_~'\"");
+const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*~'\"");
 
 fn autolink_delim(data: &str, mut link_end: usize, relaxed_autolinks: bool) -> usize {
     // \u{2069} (Pop Directional Isolate)

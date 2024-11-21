@@ -340,10 +340,11 @@ fn pathological_autolink_www_failing_domains() {
 #[timeout(4000)]
 fn pathological_autolink_url_failing_domains() {
     let n = 20_000;
-    let input = "http://a_".repeat(n);
+    let input = "http://a.".repeat(n);
     let exp = format!(
-        "<p>{}<a href=\"http://a\">http://a</a>_</p>\n",
-        "http://a_".repeat(n - 1)
+        "<p><a href=\"{}http://a\">{}http://a</a>.</p>\n",
+        "http://a.".repeat(n - 1),
+        "http://a.".repeat(n - 1),
     );
 
     html_opts!([extension.autolink], &input, &exp, no_roundtrip);
@@ -376,10 +377,11 @@ fn pathological_autolink_url_lt_separated() {
 #[timeout(4000)]
 fn pathological_relaxed_autolink_failing_domains() {
     let n = 20_000;
-    let input = "a://_".repeat(n);
+    let input = "a://*".repeat(n);
     let exp = format!(
-        "<p>{}a://<em><a href=\"a://\">a://</a></em></p>\n",
-        "a://_".repeat(n - 2)
+        "<p><a href=\"{}a://\">{}a://</a>*</p>\n",
+        "a://*".repeat(n - 1),
+        "a://*".repeat(n - 1),
     );
 
     html_opts!([extension.autolink, parse.relaxed_autolinks], &input, &exp);

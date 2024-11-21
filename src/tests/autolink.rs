@@ -374,6 +374,19 @@ fn autolink_failing_spec_underscores() {
 }
 
 #[test]
+fn autolink_trailing_underscores() {
+    html_opts!(
+        [extension.autolink],
+        "https://a.com/path_ www.a.com/path__. https://a.com_ www.a.com_*",
+        concat!(
+            "<p><a href=\"https://a.com/path_\">https://a.com/path_</a> ",
+            "<a href=\"http://www.a.com/path__\">www.a.com/path__</a>. ",
+            "https://a.com_ www.a.com_*</p>\n"
+        ),
+    );
+}
+
+#[test]
 fn autolink_fuzz_leading_colon() {
     html_opts!(
         [extension.autolink, parse.relaxed_autolinks],
@@ -818,12 +831,12 @@ fn autolink_email_must_be_literal() {
 fn autolink_domain_excludes_trailing_punctuation() {
     html_opts!(
         [extension.autolink],
-        "_www.a.com_ __http://a.com__ www.a.com_ www.a.b_c.com_ http://a_b.com_\n",
+        "*www.a.com* **http://a.com** www.a.com* www.a.b_c.com* http://a_b.com*\n",
         concat!(
             "<p><em><a href=\"http://www.a.com\">www.a.com</a></em> ",
             "<strong><a href=\"http://a.com\">http://a.com</a></strong> ",
-            "<a href=\"http://www.a.com\">www.a.com</a>_ ",
-            "www.a.b_c.com_ http://a_b.com_</p>\n"
+            "<a href=\"http://www.a.com\">www.a.com</a>* ",
+            "www.a.b_c.com* http://a_b.com*</p>\n"
         ),
     );
 }
