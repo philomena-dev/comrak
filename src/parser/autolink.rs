@@ -315,7 +315,7 @@ fn is_valid_hostchar(ch: char) -> bool {
 }
 
 fn autolink_delim(data: &[u8], mut link_end: usize, relaxed_autolinks: bool) -> usize {
-    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*_~'\"");
+    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*~'\"");
 
     for (i, &b) in data.iter().enumerate().take(link_end) {
         if b == b'<' {
