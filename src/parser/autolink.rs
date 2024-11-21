@@ -169,7 +169,7 @@ fn is_valid_hostchar(ch: char) -> bool {
 fn autolink_delim(data: &[u8], mut link_end: usize, relaxed_autolinks: bool) -> usize {
     static LINK_END_ASSORTMENT: Lazy<[bool; 256]> = Lazy::new(|| {
         let mut sc = [false; 256];
-        for c in &[b'?', b'!', b'.', b',', b':', b'*', b'_', b'~', b'\'', b'"'] {
+        for c in &[b'?', b'!', b'.', b',', b':', b'*', b'~', b'\'', b'"'] {
             sc[*c as usize] = true;
         }
         sc
