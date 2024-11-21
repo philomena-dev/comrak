@@ -818,12 +818,12 @@ fn autolink_email_must_be_literal() {
 fn autolink_domain_excludes_trailing_punctuation() {
     html_opts!(
         [extension.autolink],
-        "_www.a.com_ __http://a.com__ www.a.com_ www.a.b_c.com_ http://a_b.com_\n",
+        "*www.a.com* **http://a.com** www.a.com* www.a.b_c.com* http://a_b.com*\n",
         concat!(
             "<p><em><a href=\"http://www.a.com\">www.a.com</a></em> ",
             "<strong><a href=\"http://a.com\">http://a.com</a></strong> ",
-            "<a href=\"http://www.a.com\">www.a.com</a>_ ",
-            "www.a.b_c.com_ http://a_b.com_</p>\n"
+            "<a href=\"http://www.a.com\">www.a.com</a>* ",
+            "www.a.b_c.com* http://a_b.com*</p>\n"
         ),
     );
 }
