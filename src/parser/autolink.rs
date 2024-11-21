@@ -313,7 +313,7 @@ fn is_valid_hostchar(ch: char) -> bool {
 }
 
 fn autolink_delim(data: &str, mut link_end: usize, relaxed_autolinks: bool) -> usize {
-    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*_~'\"");
+    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*~'\"");
 
     let bytes = data.as_bytes();
     for (i, &b) in bytes.iter().enumerate().take(link_end) {
