@@ -308,7 +308,7 @@ fn is_valid_hostchar(ch: char) -> bool {
 }
 
 fn autolink_delim(data: &str, mut link_end: usize, relaxed_autolinks: bool) -> usize {
-    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*_~'\"");
+    const LINK_END_ASSORTMENT: [bool; 256] = character_set!(b"?!.,:*~'\"");
     // \u{2069} (Pop Directional Isolate)
     const LINK_END_UNICODE: [u8; 3] = [0xe2, 0x81, 0xa9];
 
