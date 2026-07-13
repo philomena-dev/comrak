@@ -313,6 +313,8 @@ impl<'o, 'c> XmlFormatter<'o, 'c> {
                 NodeValue::Underline => {}
                 NodeValue::Subscript => {}
                 NodeValue::SpoileredText => {}
+                NodeValue::DiffInserted => {}
+                NodeValue::DiffDeleted => {}
                 NodeValue::ImageMention(ref data) => {
                     self.escape(">>")?;
                     self.escape(data)?;

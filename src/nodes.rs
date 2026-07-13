@@ -241,6 +241,16 @@ pub enum NodeValue {
     /// **Inline**.  Spoilered text.  Enabled with `spoiler` option.
     SpoileredText,
 
+    /// **Inline**.  Inserted text in a rendered Markdown diff, rendered as
+    /// `<ins class="differ">`.  Not produced by the parser; constructed
+    /// programmatically by Philomena's diff renderer.
+    DiffInserted,
+
+    /// **Inline**.  Deleted text in a rendered Markdown diff, rendered as
+    /// `<del class="differ">`.  Not produced by the parser; constructed
+    /// programmatically by Philomena's diff renderer.
+    DiffDeleted,
+
     /// **Inline**.  Image mention link. Enabled with `ext_philomena` option; the `String` is
     /// the referent image markup.
     ImageMention(String),
@@ -776,6 +786,8 @@ impl NodeValue {
             NodeValue::Underline => "underline",
             NodeValue::Subscript => "subscript",
             NodeValue::SpoileredText => "spoiler",
+            NodeValue::DiffInserted => "diff_inserted",
+            NodeValue::DiffDeleted => "diff_deleted",
             NodeValue::ImageMention(_) => "image_mention",
             NodeValue::EscapedTag(_) => "escaped_tag",
             NodeValue::Alert(_) => "alert",
@@ -1074,6 +1086,8 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
             | NodeValue::Insert
             | NodeValue::Superscript
             | NodeValue::SpoileredText
+            | NodeValue::DiffInserted
+            | NodeValue::DiffDeleted
             | NodeValue::Underline
             | NodeValue::Subscript
             | NodeValue::Subtext
@@ -1112,6 +1126,8 @@ impl<'a> arena_tree::Node<'a, RefCell<Ast>> {
                     | NodeValue::FootnoteReference(..)
                     | NodeValue::Superscript
                     | NodeValue::SpoileredText
+                    | NodeValue::DiffInserted
+                    | NodeValue::DiffDeleted
                     | NodeValue::Underline
                     | NodeValue::Subscript
                     | NodeValue::TaskItem(_)

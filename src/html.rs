@@ -405,6 +405,8 @@ pub fn format_node_default<T>(
         #[cfg(feature = "shortcodes")]
         NodeValue::ShortCode(ref nsc) => render_short_code(context, entering, nsc),
         NodeValue::SpoileredText => render_spoiler_text(context, node, entering),
+        NodeValue::DiffInserted => render_diff_inserted(context, node, entering),
+        NodeValue::DiffDeleted => render_diff_deleted(context, node, entering),
         NodeValue::ImageMention(ref data) => render_image_mention(context, entering, data),
         NodeValue::Subscript => render_subscript(context, node, entering),
         NodeValue::Superscript => render_superscript(context, node, entering),
@@ -1636,6 +1638,38 @@ fn render_underline<T>(
         context.write_str(">")?;
     } else {
         context.write_str("</u>")?;
+    }
+
+    Ok(ChildRendering::HTML)
+}
+
+fn render_diff_inserted<T>(
+    context: &mut Context<T>,
+    node: Node<'_>,
+    entering: bool,
+) -> Result<ChildRendering, fmt::Error> {
+    if entering {
+        context.write_str("<ins class=\"differ\"")?;
+        render_sourcepos(context, node)?;
+        context.write_str(">")?;
+    } else {
+        context.write_str("</ins>")?;
+    }
+
+    Ok(ChildRendering::HTML)
+}
+
+fn render_diff_deleted<T>(
+    context: &mut Context<T>,
+    node: Node<'_>,
+    entering: bool,
+) -> Result<ChildRendering, fmt::Error> {
+    if entering {
+        context.write_str("<del class=\"differ\"")?;
+        render_sourcepos(context, node)?;
+        context.write_str(">")?;
+    } else {
+        context.write_str("</del>")?;
     }
 
     Ok(ChildRendering::HTML)

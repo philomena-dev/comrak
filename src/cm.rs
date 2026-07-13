@@ -510,6 +510,9 @@ impl<'a, 'o, 'c, 'w> CommonMarkFormatter<'a, 'o, 'c, 'w> {
             NodeValue::Underline => self.format_underline()?,
             NodeValue::Subscript => self.format_subscript()?,
             NodeValue::SpoileredText => self.format_spoiler()?,
+            // Diff markers are never produced by the parser and have no
+            // CommonMark representation; emit their contents unchanged.
+            NodeValue::DiffInserted | NodeValue::DiffDeleted => {}
             NodeValue::ImageMention(ref id_str) => self.format_image_mention(id_str, entering)?,
             NodeValue::EscapedTag(net) => self.format_escaped_tag(net)?,
             NodeValue::Alert(ref alert) => self.format_alert(alert, entering)?,
