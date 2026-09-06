@@ -364,6 +364,15 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
             {
                 Some(self.handle_image_mention())
             }
+            b'>' if self.options.extension.greentext => {
+                let startpos = self.scanner.pos;
+                self.take_while(b'>');
+                Some(self.make_inline(
+                    NodeValue::Text(self.input[startpos..self.scanner.pos].to_string().into()),
+                    startpos,
+                    self.scanner.pos - 1,
+                ))
+            }
             b'>' if self.options.parse.smart => Some(self.handle_guillemet_close()),
             b'|' if self.options.extension.spoiler => Some(self.handle_delim(b'|')),
             _ => {
@@ -569,7 +578,10 @@ impl<'a, 'r, 'o, 'd, 'c, 'p> Subject<'a, 'r, 'o, 'd, 'c, 'p> {
     fn handle_pointy_brace(&mut self, parent_line_offsets: &[usize]) -> Node<'a> {
         self.scanner.pos += 1;
 
-        if self.options.parse.smart && self.peek_byte() == Some(b'<') {
+        if self.options.parse.smart
+            && !self.options.extension.greentext
+            && self.peek_byte() == Some(b'<')
+        {
             self.scanner.pos += 1;
             return self.make_inline(
                 NodeValue::Text("\u{ab}".into()),
