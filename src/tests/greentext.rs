@@ -10,6 +10,15 @@ fn greentext_preserved() {
 }
 
 #[test]
+fn greentext_preserved_no_guillemets() {
+    html_opts!(
+        [extension.greentext, render.hardbreaks, parse.smart],
+        " >implying\n >>implying << >>not implying",
+        "<p>&gt;implying<br />\n&gt;&gt;implying &lt;&lt; &gt;&gt;not implying</p>\n"
+    );
+}
+
+#[test]
 fn empty_line() {
     html_opts!([extension.greentext], ">", "<p>&gt;</p>\n");
 }
