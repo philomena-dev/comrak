@@ -565,7 +565,13 @@ where
         // When already inside a blockquote, always treat `>` as a blockquote marker,
         // even if it's a lone `>` (which represents a blank line in the blockquote).
         // This allows multi-paragraph blockquotes without requiring a space after `>`.
-        if indent <= 3 && bytes.get(self.first_nonspace) == Some(&b'>') {
+        if indent <= 3
+            && bytes.get(self.first_nonspace) == Some(&b'>')
+            && (!self.is_greentext(line)
+                || bytes
+                    .get(self.first_nonspace + 1)
+                    .is_none_or(|&b| strings::is_line_end_char(b)))
+        {
             self.advance_offset(line, indent + 1, true);
 
             if byte_matches(bytes, self.offset, strings::is_space_or_tab) {

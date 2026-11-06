@@ -119,3 +119,38 @@ fn greentext_enabled_blockquote_alerts() {
         ),
     );
 }
+
+#[test]
+fn greentext_and_embed_after_quote_closes_the_quote() {
+    html_opts_i(
+        "> quote\n>>1p\nreply",
+        "<blockquote>\n<p>quote</p>\n</blockquote>\n<p><div id=\"1\">p</div><br />\nreply</p>\n",
+        false,
+        |opts| {
+            let mut replacements = HashMap::new();
+            replacements.insert("1p".to_string(), "<div id=\"1\">p</div>".to_string());
+
+            opts.extension.greentext = true;
+            opts.extension.replacements = Some(replacements);
+            opts.render.hardbreaks = true;
+        },
+    );
+
+    html_opts!(
+        [extension.greentext],
+        "> quote\n>implying",
+        "<blockquote>\n<p>quote</p>\n</blockquote>\n<p>&gt;implying</p>\n",
+    );
+
+    html_opts!(
+        [extension.greentext],
+        "> a\n>> b",
+        "<blockquote>\n<p>a</p>\n</blockquote>\n<p>&gt;&gt; b</p>\n",
+    );
+
+    html_opts!(
+        [extension.greentext, render.hardbreaks],
+        "> quote\n>\treply",
+        "<blockquote>\n<p>quote<br />\nreply</p>\n</blockquote>\n",
+    );
+}
